@@ -1,6 +1,5 @@
 package com.acessibiliadade.pop.model;
 
-
 import com.acessibiliadade.pop.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "product")
+@Table(name = "payment")
 public class Payment {
 
     @Id
@@ -26,7 +25,7 @@ public class Payment {
     @Column(name = "method", nullable = false, length = 50)
     private String method;
 
-    @Column(name = "status", nullable = false)
-    private Enum<PaymentStatus> status = PaymentStatus.PENDING;
-
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 50)
+    private PaymentStatus status = PaymentStatus.PENDING;
 }
