@@ -1,81 +1,46 @@
 package com.acessibiliadade.pop.controller;
 
-import com.acessibiliadade.pop.model.User;
-import com.acessibiliadade.pop.service.JwtService;
-import com.acessibiliadade.pop.service.UserService;
+import com.acessibiliadade.pop.dto.AuthDTOs.AuthResponse;
+import com.acessibiliadade.pop.dto.AuthDTOs.LoginRequest;
+import com.acessibiliadade.pop.dto.AuthDTOs.RegisterRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
+/**
+ * EXEMPLO de como aplicar @Valid no controller.
+ *
+ * A anotação @Valid no parâmetro do método ativa as validações
+ * declaradas no DTO (AuthDTOs.java). Se algum campo falhar,
+ * o GlobalExceptionHandler intercepta e retorna 422 com detalhes.
+ *
+ * SUBSTITUA seu AuthController atual por este padrão.
+ * Os métodos internos (authService.register, authService.login)
+ * permanecem os mesmos que você já tem.
+ */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
-    private final UserService userService;
+    // Injete seu AuthService aqui normalmente
+    // private final AuthService authService;
 
-    public AuthController(AuthenticationManager authenticationManager,
-                          JwtService jwtService,
-                          UserService userService) {
-        this.authenticationManager = authenticationManager;
-        this.jwtService = jwtService;
-        this.userService = userService;
-    }
-
+    /**
+     * Registro — valida name, email (formato) e password (min 6 chars)
+     * antes de chegar no service.
+     */
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Map<String, String> userData) {
-        try {
-            User user = new User();
-            user.setName(userData.get("name"));
-            user.setEmail(userData.get("email"));
-            user.setPassword(userData.get("password"));
-
-            User createdUser = userService.createUser(user);
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("id", createdUser.getId());
-            response.put("name", createdUser.getName());
-            response.put("email", createdUser.getEmail());
-            response.put("message", "Usuário registrado com sucesso!");
-
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+        // return ResponseEntity.status(201).body(authService.register(request));
+        throw new UnsupportedOperationException("Implemente chamando seu AuthService");
     }
 
+    /**
+     * Login — valida email e senha não vazios antes de autenticar.
+     */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
-        try {
-            String email = loginRequest.get("email");
-            String password = loginRequest.get("password");
-
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(email, password)
-            );
-
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String token = jwtService.generateToken(userDetails.getUsername());
-
-            Map<String, String> response = new HashMap<>();
-            response.put("token", token);
-            response.put("email", userDetails.getUsername());
-
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body(Map.of("error", "Credenciais inválidas"));
-        }
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+        // return ResponseEntity.ok(authService.login(request));
+        throw new UnsupportedOperationException("Implemente chamando seu AuthService");
     }
 }

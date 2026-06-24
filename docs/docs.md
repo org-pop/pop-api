@@ -1,4 +1,4 @@
-# 🐵 Documentação Oficial da API - POP E-Commerce
+# 🐵  Documentação Oficial da API - POP E-Commerce
 
 **Versão:** 1.0.0  
 **Status:** Estável (Production Ready)  
