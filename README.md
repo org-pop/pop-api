@@ -16,7 +16,7 @@ Aqui está o README completo para o seu projeto:
 
 **API RESTful para gerenciamento de e-commerce de Funko Pops**
 
-[**Documentação da API**](docs/API.md) • [**Guia de Contribuição**](CONTRIBUTING.md) • [**Reportar Bug**](https://github.com/seu-usuario/pop-api/issues)
+[**Documentação da API**](docs/docs.md) • [**Guia de Contribuição**](CONTRIBUTING.md) • [**Reportar Bug**](https://github.com/seu-usuario/pop-api/issues)
 
 </div>
 
