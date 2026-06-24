@@ -1,5 +1,6 @@
 package com.acessibiliadade.pop.controller;
 
+import com.acessibiliadade.pop.model.User;
 import com.acessibiliadade.pop.service.JwtService;
 import com.acessibiliadade.pop.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -31,22 +32,42 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody Map<String, String> userData) {
         try {
-            // 1. Autentica o usuário
+            User user = new User();
+            user.setName(userData.get("name"));
+            user.setEmail(userData.get("email"));
+            user.setPassword(userData.get("password"));
+
+            User createdUser = userService.createUser(user);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", createdUser.getId());
+            response.put("name", createdUser.getName());
+            response.put("email", createdUser.getEmail());
+            response.put("message", "Usuário registrado com sucesso!");
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
+        try {
+            String email = loginRequest.get("email");
+            String password = loginRequest.get("password");
+
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequest.getEmail(),
-                            loginRequest.getPassword()
-                    )
+                    new UsernamePasswordAuthenticationToken(email, password)
             );
 
-            // 2. Se autenticou, gera o token
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String token = jwtService.generateToken(userDetails.getUsername());
 
-            // 3. Retorna o token
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
             response.put("email", userDetails.getUsername());
@@ -55,28 +76,6 @@ public class AuthController {
 
         } catch (Exception e) {
             return ResponseEntity.status(401).body(Map.of("error", "Credenciais inválidas"));
-        }
-    }
-
-    // Classe interna para receber os dados do login
-    public static class LoginRequest {
-        private String email;
-        private String password;
-
-        public String getEmail() {
-            return email;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
         }
     }
 }

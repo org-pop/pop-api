@@ -1,9 +1,9 @@
-# 🐵Documentação Oficial da API - POP E-Commerce
+# 🐵 Documentação Oficial da API - POP E-Commerce
 
 **Versão:** 1.0.0  
 **Status:** Estável (Production Ready)  
 **Base URL:** `http://localhost:8080`  
-**Tecnologias:** Java 17, Spring Boot 3.x, Spring Data JPA, PostgreSQL/MySQL, Maven.
+**Tecnologias:** Java 17, Spring Boot 3.x, Spring Security, JWT, Spring Data JPA, PostgreSQL/MySQL, Maven.
 
 ---
 
@@ -11,20 +11,22 @@
 
 1. [Introdução](#1-introdução)
 2. [Autenticação e Segurança](#2-autenticação-e-segurança)
-3. [Formato de Dados e Headers](#3-formato-de-dados-e-headers)
-4. [Códigos de Status HTTP](#4-códigos-de-status-http)
-5. [Modelos de Dados (Schemas)](#5-modelos-de-dados-schemas)
-6. [Endpoints - Usuários](#6-endpoints-usuários-apiusers)
-7. [Endpoints - Produtos](#7-endpoints-produtos-products)
-8. [Endpoints - Carrinho de Compras](#8-endpoints-carrinho-de-compras-cart)
-9. [Endpoints - Itens do Carrinho](#9-endpoints-itens-do-carrinho-cart-items)
-10. [Endpoints - Pedidos](#10-endpoints-pedidos-orders)
-11. [Endpoints - Pagamentos](#11-endpoints-pagamentos-payments)
-12. [Endpoints - Endereços](#12-endpoints-endereços-addresses)
-13. [Endpoints - Telefones](#13-endpoints-telefones-phones)
-14. [Glossário de Enums](#14-glossário-de-enums)
-15. [Tratamento de Erros Globais](#15-tratamento-de-erros-globais)
-16. [Changelog e Melhorias Futuras](#16-changelog-e-melhorias-futuras)
+3. [Fluxo de Autenticação](#3-fluxo-de-autenticação)
+4. [Formato de Dados e Headers](#4-formato-de-dados-e-headers)
+5. [Códigos de Status HTTP](#5-códigos-de-status-http)
+6. [Modelos de Dados (Schemas)](#6-modelos-de-dados-schemas)
+7. [Endpoints - Autenticação](#7-endpoints-autenticação-apiauth)
+8. [Endpoints - Usuários](#8-endpoints-usuários-apiusers)
+9. [Endpoints - Produtos](#9-endpoints-produtos-products)
+10. [Endpoints - Carrinho de Compras](#10-endpoints-carrinho-de-compras-cart)
+11. [Endpoints - Itens do Carrinho](#11-endpoints-itens-do-carrinho-cart-items)
+12. [Endpoints - Pedidos](#12-endpoints-pedidos-orders)
+13. [Endpoints - Pagamentos](#13-endpoints-pagamentos-payments)
+14. [Endpoints - Endereços](#14-endpoints-endereços-addresses)
+15. [Endpoints - Telefones](#15-endpoints-telefones-phones)
+16. [Glossário de Enums](#16-glossário-de-enums)
+17. [Tratamento de Erros Globais](#17-tratamento-de-erros-globais)
+18. [Changelog e Melhorias Futuras](#18-changelog-e-melho
 
 ---
 
@@ -38,64 +40,162 @@ compras, fluxo de checkout, processamento de pagamentos e gestão de endereços/
 
 ## 2. Autenticação e Segurança
 
-> ⚠️ **Aviso de Segurança:** Atualmente, a API **não implementa** nenhum mecanismo de autenticação (como JWT ou OAuth2).
-> Todos os endpoints estão publicamente acessíveis.
+A API utiliza **Spring Security** com **JWT (JSON Web Token)** para proteger os endpoints e garantir que apenas usuários autenticados possam acessar recursos protegidos.
 
-**Recomendação para Produção:**  
-Implementar Spring Security com JWT (JSON Web Token) para proteger rotas administrativas e dados sensíveis dos usuários.
-Incluir suporte a roles (`ADMIN`, `USER`) para controle de acesso granular.
+### 2.1. Como funciona
+
+1. O usuário se registra no sistema (`/api/auth/register`)
+2. O usuário faz login com e-mail e senha (`/api/auth/login`)
+3. O servidor valida as credenciais e retorna um token JWT
+4. O token deve ser enviado em todas as requisições subsequentes no header `Authorization`
+5. O servidor valida o token e libera ou bloqueia o acesso
+
+### 2.2. Endpoints Públicos (Sem Autenticação)
+
+Os seguintes endpoints são **publicamente acessíveis**:
+
+- `POST /api/auth/register` - Registrar novo usuário
+- `POST /api/auth/login` - Fazer login
+
+### 2.3. Endpoints Protegidos
+
+**Todos os outros endpoints** exigem autenticação via JWT, incluindo:
+
+- `GET /api/users` - Listar usuários
+- `GET /api/users/{id}` - Buscar usuário por ID
+- `PUT /api/users/{id}` - Atualizar usuário
+- `DELETE /api/users/{id}` - Deletar usuário
+- `GET /products/*` - Operações com produtos
+- `POST /products` - Criar produto (apenas ADMIN)
+- `PUT /products/{id}` - Atualizar produto (apenas ADMIN)
+- `DELETE /products/{id}` - Deletar produto (apenas ADMIN)
+- `GET /cart/{userId}` - Visualizar carrinho
+- `POST /cart/{userId}/add/{productId}` - Adicionar ao carrinho
+- `PUT /cart/{userId}/item/{itemId}` - Atualizar carrinho
+- `DELETE /cart/{userId}/item/{itemId}` - Remover do carrinho
+- `POST /orders/{userId}/checkout` - Finalizar pedido
+- `GET /orders/{userId}` - Listar pedidos
+- `PUT /orders/{orderId}/status` - Atualizar status do pedido
+- E todos os demais endpoints...
+
+### 2.4. Roles e Permissões (Planejado para v1.1.0)
+
+| Role    | Permissões                                                                 |
+|:--------|:---------------------------------------------------------------------------|
+| `ADMIN` | Acesso total a todos os endpoints, incluindo criação/edição/deleção de produtos |
+| `USER`  | Acesso a endpoints de usuário, carrinho, pedidos e consulta de produtos    |
 
 ---
 
-## 3. Formato de Dados e Headers
+## 3. Fluxo de Autenticação
 
-| Header         | Valor              | Obrigatório               |
-|:---------------|:-------------------|:--------------------------|
+### 3.1. Registro de Usuário
+
+**Passo 1:** O usuário envia uma requisição POST para `/api/auth/register` com nome, e-mail e senha.
+
+**Passo 2:** O servidor valida os dados, criptografa a senha usando BCrypt e salva o usuário no banco.
+
+**Passo 3:** O servidor retorna os dados do usuário criado (sem a senha).
+
+### 3.2. Login
+
+**Passo 1:** O usuário envia uma requisição POST para `/api/auth/login` com e-mail e senha.
+
+**Passo 2:** O servidor valida as credenciais usando o `AuthenticationManager`.
+
+**Passo 3:** Se as credenciais forem válidas, o servidor gera um token JWT com validade de 24 horas.
+
+**Passo 4:** O servidor retorna o token e o e-mail do usuário.
+
+### 3.3. Acessando Endpoints Protegidos
+
+**Passo 1:** O usuário inclui o token JWT no header `Authorization` de todas as requisições.
+
+**Passo 2:** O `JwtAuthenticationFilter` intercepta a requisição, extrai o token e valida sua autenticidade.
+
+**Passo 3:** Se o token for válido, o Spring Security autentica o usuário e permite o acesso ao recurso.
+
+**Passo 4:** Se o token for inválido ou expirado, o servidor retorna erro `401 Unauthorized`.
+
+### 3.4. Exemplo Prático
+
+```bash
+# 1. Registrar usuário
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"João Silva","email":"joao@email.com","password":"senha123"}'
+
+# 2. Fazer login
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"joao@email.com","password":"senha123"}'
+
+# 3. Usar o token para acessar endpoints protegidos
+curl -X GET http://localhost:8080/api/users \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+---
+
+## 4. Formato de Dados e Headers
+
+### 4.1. Headers Obrigatórios
+
+| Header | Valor | Obrigatório |
+|:-------|:------|:-----------|
 | `Content-Type` | `application/json` | Sim (para POST/PUT/PATCH) |
-| `Accept`       | `application/json` | Sim                       |
+| `Accept` | `application/json` | Sim |
+| `Authorization` | `Bearer {token}` | Sim (para endpoints protegidos) |
 
-**Regras Gerais:**
+### 4.2. Exemplo de Header Authorization
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2FvQGVtYWlsLmNvbSIsImlhdCI6MTcxNjkwNjIzMCwiZXhwIjoxNzE2OTkyNjMwfQ.abc123...
+```
+
+### 4.3. Regras Gerais
 
 - Datas seguem o padrão ISO-8601 (`yyyy-MM-ddTHH:mm:ss`).
 - Moeda representada em ponto flutuante (`Double`) com duas casas decimais.
 - IDs do tipo `UUID` para usuários e `Long` para as demais entidades.
+- Senhas são armazenadas com hash BCrypt (não são retornadas em nenhuma resposta).
 
 ---
 
-## 4. Códigos de Status HTTP
+## 5. Códigos de Status HTTP
 
 A API utiliza os códigos padrão do protocolo HTTP para indicar o sucesso ou falha da requisição.
 
-| Código                        | Descrição                                                                              |
-|:------------------------------|:---------------------------------------------------------------------------------------|
-| **200 OK**                    | Requisição bem-sucedida (GET, PUT, PATCH).                                             |
-| **201 Created**               | Recurso criado com sucesso (POST).                                                     |
-| **204 No Content**            | Recurso deletado com sucesso (DELETE).                                                 |
-| **400 Bad Request**           | Requisição inválida (parâmetros ausentes, formato incorreto ou violação de validação). |
-| **404 Not Found**             | Recurso não encontrado (ID inválido ou URL incorreta).                                 |
-| **409 Conflict**              | Conflito com o estado atual do recurso (ex: e-mail já cadastrado).                     |
-| **422 Unprocessable Entity**  | Entidade não processável (ex: estoque insuficiente).                                   |
-| **500 Internal Server Error** | Erro inesperado no servidor.                                                           |
+| Código | Descrição |
+|:-------|:----------|
+| **200 OK** | Requisição bem-sucedida (GET, PUT, PATCH). |
+| **201 Created** | Recurso criado com sucesso (POST). |
+| **204 No Content** | Recurso deletado com sucesso (DELETE). |
+| **400 Bad Request** | Requisição inválida (parâmetros ausentes, formato incorreto ou violação de validação). |
+| **401 Unauthorized** | Token JWT ausente, inválido ou expirado. |
+| **403 Forbidden** | Usuário autenticado mas sem permissão para acessar o recurso. |
+| **404 Not Found** | Recurso não encontrado (ID inválido ou URL incorreta). |
+| **409 Conflict** | Conflito com o estado atual do recurso (ex: e-mail já cadastrado). |
+| **422 Unprocessable Entity** | Entidade não processável (ex: estoque insuficiente). |
+| **500 Internal Server Error** | Erro inesperado no servidor. |
 
 ---
 
-## 5. Modelos de Dados (Schemas)
+## 6. Modelos de Dados (Schemas)
 
-### 5.1. Usuário (`User`)
+### 6.1. Usuário (`User`)
 
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "name": "João Silva",
   "email": "joao@email.com",
-  "password": "********",
-  // (não retornado em GETs, apenas na criação)
   "accountBalance": 150.75,
   "createdAt": "2026-06-23T10:30:00"
 }
 ```
 
-### 5.2. Produto (`Product`)
+### 6.2. Produto (`Product`)
 
 ```json
 {
@@ -107,11 +207,10 @@ A API utiliza os códigos padrão do protocolo HTTP para indicar o sucesso ou fa
   "imageUrl": "https://cdn.pop.com/harry_potter.jpg",
   "franchise": "Harry Potter",
   "rarity": "COMUM"
-  // Valores: COMUM, INCOMUM, RARO, EPICO, LENDARIO
 }
 ```
 
-### 5.3. Carrinho (`Cart`)
+### 6.3. Carrinho (`Cart`)
 
 ```json
 {
@@ -124,7 +223,7 @@ A API utiliza os códigos padrão do protocolo HTTP para indicar o sucesso ou fa
 }
 ```
 
-### 5.4. Item do Carrinho (`CartItem`)
+### 6.4. Item do Carrinho (`CartItem`)
 
 ```json
 {
@@ -140,7 +239,7 @@ A API utiliza os códigos padrão do protocolo HTTP para indicar o sucesso ou fa
 }
 ```
 
-### 5.5. Pedido (`Order`)
+### 6.5. Pedido (`Order`)
 
 ```json
 {
@@ -151,12 +250,11 @@ A API utiliza os códigos padrão do protocolo HTTP para indicar o sucesso ou fa
   },
   "total": 179.80,
   "status": "PENDING",
-  // Valores: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED
   "createdAt": "2026-06-23T10:35:00"
 }
 ```
 
-### 5.6. Pagamento (`Payment`)
+### 6.6. Pagamento (`Payment`)
 
 ```json
 {
@@ -165,14 +263,12 @@ A API utiliza os códigos padrão do protocolo HTTP para indicar o sucesso ou fa
     "id": 100
   },
   "method": "CREDIT_CARD",
-  // Valores: CREDIT_CARD, DEBIT_CARD, PIX, BOLETO
   "status": "APPROVED",
-  // Valores: PENDING, PROCESSING, APPROVED, DECLINED, REFUNDED, CANCELLED
   "paymentDate": "2026-06-23T10:40:00"
 }
 ```
 
-### 5.7. Endereço (`Address`)
+### 6.7. Endereço (`Address`)
 
 ```json
 {
@@ -189,7 +285,7 @@ A API utiliza os códigos padrão do protocolo HTTP para indicar o sucesso ou fa
 }
 ```
 
-### 5.8. Telefone (`Phone`)
+### 6.8. Telefone (`Phone`)
 
 ```json
 {
@@ -199,17 +295,107 @@ A API utiliza os códigos padrão do protocolo HTTP para indicar o sucesso ou fa
   },
   "phoneNumber": "11999999999",
   "type": "MOBILE"
-  // Valores: HOME, WORK, MOBILE
 }
 ```
 
 ---
 
-## 6. Endpoints - Usuários (`/api/users`)
+## 7. Endpoints - Autenticação (`/api/auth`)
+
+Endpoints para registro e autenticação de usuários.
+
+### 7.1. Registrar Usuário
+
+> **POST** `/api/auth/register`
+
+**Corpo da Requisição:**
+
+```json
+{
+  "name": "Maria Oliveira",
+  "email": "maria@email.com",
+  "password": "senhaForte123"
+}
+```
+
+| Campo | Tipo | Obrigatório | Validação |
+|:------|:-----|:-----------|:----------|
+| `name` | String | Sim | Mínimo 3 caracteres |
+| `email` | String | Sim | Formato de e-mail válido e único |
+| `password` | String | Sim | Mínimo 6 caracteres |
+
+**Resposta (201 Created):**
+
+```json
+{
+  "id": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+  "name": "Maria Oliveira",
+  "email": "maria@email.com",
+  "message": "Usuário registrado com sucesso!"
+}
+```
+
+**Possíveis Erros:**
+
+| Status | Descrição |
+|:-------|:----------|
+| `400 Bad Request` | Campos inválidos ou ausentes |
+| `409 Conflict` | E-mail já está em uso |
+
+---
+
+### 7.2. Login
+
+> **POST** `/api/auth/login`
+
+**Corpo da Requisição:**
+
+```json
+{
+  "email": "maria@email.com",
+  "password": "senhaForte123"
+}
+```
+
+| Campo | Tipo | Obrigatório |
+|:------|:-----|:-----------|
+| `email` | String | Sim |
+| `password` | String | Sim |
+
+**Resposta (200 OK):**
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYXJpYUBlbWFpbC5jb20iLCJpYXQiOjE3MTY5MDYyMzAsImV4cCI6MTcxNjk5MjYzMH0.abc123...",
+  "email": "maria@email.com"
+}
+```
+
+**Possíveis Erros:**
+
+| Status | Descrição |
+|:-------|:----------|
+| `401 Unauthorized` | Credenciais inválidas |
+
+### 7.3. Regras de Segurança do Token
+
+- **Algoritmo:** HS256 (HMAC SHA-256)
+- **Validade:** 24 horas (86.400.000 milissegundos)
+- **Chave Secreta:** Configurada via variável de ambiente `JWT_SECRET`
+- **Claims:**
+    - `sub` (subject): E-mail do usuário
+    - `iat` (issued at): Data de emissão
+    - `exp` (expiration): Data de expiração
+
+---
+
+## 8. Endpoints - Usuários (`/api/users`)
 
 Gerencia o cadastro, consulta, atualização e remoção de usuários.
 
-### 6.1. Criar Usuário
+> ⚠️ **Aviso:** Todos os endpoints abaixo exigem autenticação via JWT.
+
+### 8.1. Criar Usuário
 
 > **POST** `/api/users`
 
@@ -218,11 +404,8 @@ Gerencia o cadastro, consulta, atualização e remoção de usuários.
 ```json
 {
   "name": "Maria Oliveira",
-  // Obrigatório, mínimo 3 caracteres
   "email": "maria@email.com",
-  // Obrigatório, formato e-mail válido e único
   "password": "senhaForte123"
-  // Obrigatório, mínimo 6 caracteres
 }
 ```
 
@@ -238,22 +421,13 @@ Gerencia o cadastro, consulta, atualização e remoção de usuários.
 }
 ```
 
-**Possíveis Erros:**
-
-- `400 Bad Request`: Campos inválidos ou ausentes.
-- `409 Conflict`: E-mail já está em uso.
-
----
-
-### 6.2. Listar Todos os Usuários
+### 8.2. Listar Todos os Usuários
 
 > **GET** `/api/users`
 
 **Resposta (200 OK):** Array com todos os usuários.
 
----
-
-### 6.3. Buscar Usuário por ID
+### 8.3. Buscar Usuário por ID
 
 > **GET** `/api/users/{id}`
 
@@ -263,17 +437,13 @@ Gerencia o cadastro, consulta, atualização e remoção de usuários.
 
 **Erro:** `404 Not Found` se o ID não existir.
 
----
-
-### 6.4. Buscar Usuário por E-mail
+### 8.4. Buscar Usuário por E-mail
 
 > **GET** `/api/users/email/{email}`
 
 **Resposta (200 OK):** Objeto `User`.
 
----
-
-### 6.5. Atualizar Usuário
+### 8.5. Atualizar Usuário
 
 > **PUT** `/api/users/{id}`
 
@@ -281,9 +451,7 @@ Gerencia o cadastro, consulta, atualização e remoção de usuários.
 
 **Resposta (200 OK):** Usuário atualizado.
 
----
-
-### 6.6. Deletar Usuário
+### 8.6. Deletar Usuário
 
 > **DELETE** `/api/users/{id}`
 
@@ -291,11 +459,13 @@ Gerencia o cadastro, consulta, atualização e remoção de usuários.
 
 ---
 
-## 7. Endpoints - Produtos (`/products`)
+## 9. Endpoints - Produtos (`/products`)
 
 Gerencia o catálogo de produtos (Funko Pops).
 
-### 7.1. Criar Produto
+> ⚠️ **Aviso:** Todos os endpoints abaixo exigem autenticação via JWT.
+
+### 9.1. Criar Produto
 
 > **POST** `/products`
 
@@ -310,15 +480,12 @@ Gerencia o catálogo de produtos (Funko Pops).
   "imageUrl": "https://cdn.pop.com/vader.jpg",
   "franchise": "Star Wars",
   "rarity": "RARO"
-  // Enum: COMUM, INCOMUM, RARO, EPICO, LENDARIO
 }
 ```
 
 **Resposta (201 Created):** Produto criado.
 
----
-
-### 7.2. Listar Produtos (com Filtros)
+### 9.2. Listar Produtos (com Filtros)
 
 > **GET** `/products`
 
@@ -329,162 +496,99 @@ Gerencia o catálogo de produtos (Funko Pops).
 
 **Resposta (200 OK):** Lista paginada de produtos.
 
----
-
-### 7.3. Buscar Produto por ID
+### 9.3. Buscar Produto por ID
 
 > **GET** `/products/{id}`
 
 **Erro:** `404 Not Found`.
 
----
-
-### 7.4. Atualizar Produto
+### 9.4. Atualizar Produto
 
 > **PUT** `/products/{id}`
 
 **Corpo:** Objeto `Product` completo.
 
----
-
-### 7.5. Deletar Produto
+### 9.5. Deletar Produto
 
 > **DELETE** `/products/{id}`
 
----
+### 9.6. Buscar por Franquia
 
-### 7.6. Buscar por Franquia
+> **GET** `/products/franchise/{franchise}`
 
-> **GET** `/products/franchise/{franchise}`  
-*Exemplo: `/products/franchise/Marvel`*
+### 9.7. Buscar por Raridade
 
----
+> **GET** `/products/rarity/{rarity}`
 
-### 7.7. Buscar por Raridade
-
-> **GET** `/products/rarity/{rarity}`  
-*Exemplo: `/products/rarity/EPICO`*
-
----
-
-### 7.8. Buscar por Faixa de Preço
+### 9.8. Buscar por Faixa de Preço
 
 > **GET** `/products/price-range?min=50.00&max=150.00`
 
-| Parâmetro | Tipo   | Obrigatório |
-|:----------|:-------|:------------|
-| `min`     | Double | Sim         |
-| `max`     | Double | Sim         |
-
----
-
-### 7.9. Produtos com Estoque Baixo
+### 9.9. Produtos com Estoque Baixo
 
 > **GET** `/products/low-stock?threshold=10`
 
-Lista produtos cujo estoque é menor que o valor informado no `threshold`.
-
----
-
-### 7.10. Buscar Produtos por Nome (Search)
+### 9.10. Buscar Produtos por Nome (Search)
 
 > **GET** `/products/search?name=Harry`
 
-Busca parcial por nome (case-insensitive).
-
----
-
-### 7.11. Atualizar Estoque (PATCH)
+### 9.11. Atualizar Estoque (PATCH)
 
 > **PATCH** `/products/{id}/stock?quantity=15`
 
-Atualiza a quantidade exata de estoque do produto.
-
-**Resposta (200 OK):** Produto com estoque atualizado.
-
-**Erro:** `400 Bad Request` se `quantity` for negativo.
-
 ---
 
-## 8. Endpoints - Carrinho de Compras (`/cart`)
+## 10. Endpoints - Carrinho de Compras (`/cart`)
 
 Gerencia o carrinho ativo de um usuário.
 
-### 8.1. Adicionar Item ao Carrinho
+> ⚠️ **Aviso:** Todos os endpoints abaixo exigem autenticação via JWT.
+
+### 10.1. Adicionar Item ao Carrinho
 
 > **POST** `/cart/{userId}/add/{productId}?quantity=2`
 
-**Regras:**
-
-- Se o produto já estiver no carrinho, a quantidade é somada.
-- Valida se o estoque é suficiente.
-
-**Resposta (201 Created):** `CartItem` criado/atualizado.
-
----
-
-### 8.2. Visualizar Carrinho do Usuário
+### 10.2. Visualizar Carrinho do Usuário
 
 > **GET** `/cart/{userId}`
 
-**Resposta:** Lista de `CartItem` com detalhes do produto.
-
----
-
-### 8.3. Atualizar Quantidade de um Item
+### 10.3. Atualizar Quantidade de um Item
 
 > **PUT** `/cart/{userId}/item/{itemId}?quantity=5`
 
-Altera a quantidade de um item específico.
-
----
-
-### 8.4. Remover Item Específico
+### 10.4. Remover Item Específico
 
 > **DELETE** `/cart/{userId}/item/{itemId}`
 
-**Resposta:** `204 No Content`.
-
----
-
-### 8.5. Limpar Todo o Carrinho
+### 10.5. Limpar Todo o Carrinho
 
 > **DELETE** `/cart/{userId}/clear`
 
-Remove todos os itens do carrinho do usuário.
+---
+
+## 11. Endpoints - Itens do Carrinho (`/cart-items`)
+
+Endpoints alternativos para manipulação direta dos itens.
+
+| Método | Endpoint | Descrição |
+|:-------|:---------|:----------|
+| `POST` | `/cart-items?cartId={cartId}&productId={productId}&quantity={q}` | Cria item diretamente |
+| `GET` | `/cart-items/cart/{cartId}` | Lista itens de um carrinho específico |
+| `PUT` | `/cart-items/{cartItemId}?quantity={q}` | Atualiza item |
+| `DELETE` | `/cart-items/{cartItemId}` | Remove item |
+| `DELETE` | `/cart-items/cart/{cartId}/clear` | Limpa carrinho por ID |
 
 ---
 
-## 9. Endpoints - Itens do Carrinho (`/cart-items`)
-
-Endpoints alternativos para manipulação direta dos itens (geralmente usados internamente ou para operações
-administrativas).
-
-| Método   | Endpoint                                                         | Descrição                             |
-|:---------|:-----------------------------------------------------------------|:--------------------------------------|
-| `POST`   | `/cart-items?cartId={cartId}&productId={productId}&quantity={q}` | Cria item diretamente                 |
-| `GET`    | `/cart-items/cart/{cartId}`                                      | Lista itens de um carrinho específico |
-| `PUT`    | `/cart-items/{cartItemId}?quantity={q}`                          | Atualiza item                         |
-| `DELETE` | `/cart-items/{cartItemId}`                                       | Remove item                           |
-| `DELETE` | `/cart-items/cart/{cartId}/clear`                                | Limpa carrinho por ID                 |
-
----
-
-## 10. Endpoints - Pedidos (`/orders`)
+## 12. Endpoints - Pedidos (`/orders`)
 
 Gerencia o ciclo de vida dos pedidos realizados a partir do carrinho.
 
-### 10.1. Realizar Checkout (Criar Pedido)
+> ⚠️ **Aviso:** Todos os endpoints abaixo exigem autenticação via JWT.
+
+### 12.1. Realizar Checkout (Criar Pedido)
 
 > **POST** `/orders/{userId}/checkout`
-
-**Regras de Negócio:**
-
-1. Verifica se o carrinho não está vazio.
-2. Verifica estoque de todos os itens.
-3. Calcula o valor total.
-4. Cria o pedido com status `PENDING`.
-5. Limpa o carrinho do usuário.
 
 **Resposta (201 Created):**
 
@@ -501,199 +605,109 @@ Gerencia o ciclo de vida dos pedidos realizados a partir do carrinho.
 }
 ```
 
-**Erro:** `422 Unprocessable Entity` se algum produto estiver sem estoque.
-
----
-
-### 10.2. Listar Pedidos do Usuário
+### 12.2. Listar Pedidos do Usuário
 
 > **GET** `/orders/{userId}`
 
-Retorna todos os pedidos do usuário ordenados por data decrescente.
-
----
-
-### 10.3. Buscar Detalhes do Pedido
+### 12.3. Buscar Detalhes do Pedido
 
 > **GET** `/orders/{orderId}/details`
 
-Retorna o pedido completo com dados do usuário e total.
-
----
-
-### 10.4. Listar Itens de um Pedido
+### 12.4. Listar Itens de um Pedido
 
 > **GET** `/orders/{orderId}/items`
 
-Retorna a lista de produtos comprados naquele pedido.
-
----
-
-### 10.5. Atualizar Status do Pedido
+### 12.5. Atualizar Status do Pedido
 
 > **PUT** `/orders/{orderId}/status?status=SHIPPED`
 
-| Status Permitidos | Descrição                               |
-|:------------------|:----------------------------------------|
-| `PROCESSING`      | Em separação                            |
-| `SHIPPED`         | Enviado ao transporte                   |
-| `DELIVERED`       | Entregue ao cliente                     |
-| `CANCELLED`       | Cancelado (apenas se estiver `PENDING`) |
-
-**Resposta:** Pedido atualizado.
-
----
-
-### 10.6. Cancelar Pedido
+### 12.6. Cancelar Pedido
 
 > **DELETE** `/orders/{orderId}/cancel`
 
-Muda o status para `CANCELLED` e restaura o estoque dos produtos (se aplicável).
-
 ---
 
-## 11. Endpoints - Pagamentos (`/payments`)
+## 13. Endpoints - Pagamentos (`/payments`)
 
 Gerencia as transações financeiras associadas aos pedidos.
 
-### 11.1. Criar Pagamento para Pedido
+> ⚠️ **Aviso:** Todos os endpoints abaixo exigem autenticação via JWT.
+
+### 13.1. Criar Pagamento para Pedido
 
 > **POST** `/payments/order/{orderId}?method=CREDIT_CARD`
 
-| Método        | Descrição             |
-|:--------------|:----------------------|
-| `CREDIT_CARD` | Cartão de Crédito     |
-| `DEBIT_CARD`  | Cartão de Débito      |
-| `PIX`         | Pagamento instantâneo |
-| `BOLETO`      | Boleto bancário       |
-
-**Resposta (201 Created):** Objeto `Payment` com status `PENDING`.
-
----
-
-### 11.2. Processar Pagamento (Simulação)
+### 13.2. Processar Pagamento (Simulação)
 
 > **POST** `/payments/{paymentId}/process`
 
-Simula o processamento da transação. (Em ambiente real, integraria com gateway externo).
-
----
-
-### 11.3. Aprovar Pagamento
+### 13.3. Aprovar Pagamento
 
 > **POST** `/payments/{paymentId}/approve`
 
-Altera status para `APPROVED`. Atualiza o pedido para `PROCESSING` (se ainda estiver pendente).
-
----
-
-### 11.4. Recusar Pagamento
+### 13.4. Recusar Pagamento
 
 > **POST** `/payments/{paymentId}/decline`
 
-Altera status para `DECLINED`. Mantém pedido como `PENDING` para nova tentativa.
-
----
-
-### 11.5. Estornar Pagamento
+### 13.5. Estornar Pagamento
 
 > **POST** `/payments/{paymentId}/refund`
 
-Altera status para `REFUNDED` e cancela o pedido associado.
-
----
-
-### 11.6. Buscar Pagamento por Pedido
+### 13.6. Buscar Pagamento por Pedido
 
 > **GET** `/payments/order/{orderId}`
 
----
+### 13.7. Buscar Pagamentos por Status
 
-### 11.7. Buscar Pagamentos por Status
+> **GET** `/payments/status/{status}`
 
-> **GET** `/payments/status/{status}`  
-*Exemplo: `/payments/status/APPROVED`*
-
----
-
-### 11.8. Atualizar Status do Pagamento (Admin)
+### 13.8. Atualizar Status do Pagamento (Admin)
 
 > **PUT** `/payments/{paymentId}/status?status=PROCESSING`
 
 ---
 
-## 12. Endpoints - Endereços (`/addresses`)
+## 14. Endpoints - Endereços (`/addresses`)
 
 Gerencia os endereços de entrega dos usuários.
 
-### 12.1. Adicionar Endereço
+> ⚠️ **Aviso:** Todos os endpoints abaixo exigem autenticação via JWT.
+
+### 14.1. Adicionar Endereço
 
 > **POST** `/addresses/user/{userId}`
 
-**Corpo:**
-
-```json
-{
-  "street": "Av. Paulista",
-  "number": "1000",
-  "complement": "Sala 202",
-  "city": "São Paulo",
-  "state": "SP",
-  "zipCode": "01310-100"
-}
-```
-
-**Resposta (201 Created):** Endereço salvo.
-
----
-
-### 12.2. Listar Endereços do Usuário
+### 14.2. Listar Endereços do Usuário
 
 > **GET** `/addresses/user/{userId}`
 
----
-
-### 12.3. Deletar Endereço
+### 14.3. Deletar Endereço
 
 > **DELETE** `/addresses/{addressId}`
 
 ---
 
-## 13. Endpoints - Telefones (`/phones`)
+## 15. Endpoints - Telefones (`/phones`)
 
 Gerencia os números de contato dos usuários.
 
-### 13.1. Adicionar Telefone
+> ⚠️ **Aviso:** Todos os endpoints abaixo exigem autenticação via JWT.
+
+### 15.1. Adicionar Telefone
 
 > **POST** `/phones/user/{userId}`
 
-**Corpo:**
-
-```json
-{
-  "phoneNumber": "11988887777",
-  "type": "MOBILE"
-  // ou HOME, WORK
-}
-```
-
-**Resposta (201 Created):** Telefone salvo.
-
----
-
-### 13.2. Listar Telefones do Usuário
+### 15.2. Listar Telefones do Usuário
 
 > **GET** `/phones/user/{userId}`
 
----
-
-### 13.3. Deletar Telefone
+### 15.3. Deletar Telefone
 
 > **DELETE** `/phones/{phoneId}`
 
 ---
 
-## 14. Glossário de Enums
+## 16. Glossário de Enums
 
 ### `ProductRarity`
 
@@ -735,7 +749,7 @@ Gerencia os números de contato dos usuários.
 
 ---
 
-## 15. Tratamento de Erros Globais
+## 17. Tratamento de Erros Globais
 
 A API utiliza um **Exception Handler Global** (`@ControllerAdvice`) que padroniza as respostas de erro no seguinte
 formato:
@@ -752,31 +766,50 @@ formato:
 
 **Principais Exceções Mapeadas:**
 
-- `ResourceNotFoundException` → 404
-- `InvalidRequestException` → 400
-- `BusinessConflictException` → 409
-- `InsufficientStockException` → 422
+| Exceção | Status | Descrição |
+|:--------|:-------|:----------|
+| `ResourceNotFoundException` | 404 | Recurso não encontrado |
+| `InvalidRequestException` | 400 | Requisição inválida |
+| `BusinessConflictException` | 409 | Conflito de negócio |
+| `InsufficientStockException` | 422 | Estoque insuficiente |
+| `AuthenticationException` | 401 | Token inválido ou não autorizado |
 
 ---
 
-## 16. Changelog e Melhorias Futuras
+## 18. Changelog e Melhorias Futuras
 
 ### Versão 1.0.0 (Atual)
 
-- Implementação completa de CRUD para todas as entidades.
-- Fluxo de carrinho e checkout funcional.
-- Simulação de pagamentos.
+- ✅ Implementação completa de CRUD para todas as entidades.
+- ✅ Fluxo de carrinho e checkout funcional.
+- ✅ Simulação de pagamentos.
+- ✅ **Spring Security com JWT implementado.**
+- ✅ **BCrypt para criptografia de senhas.**
 
 ### Próximas Versões (Roadmap)
 
-- **v1.1.0:** Implementação de Spring Security com JWT.
-- **v1.2.0:** Integração com gateway de pagamento real (Stripe/PagSeguro).
-- **v1.3.0:** Sistema de cupons de desconto e promoções.
-- **v1.4.0:** Histórico de navegação e recomendações de produtos.
-- **v1.5.0:** Documentação interativa via Swagger UI (`/swagger-ui.html`).
+- **v1.1.0:**
+    - Implementação de roles (`ADMIN`, `USER`)
+    - Controle de acesso baseado em roles
+    - Refresh Token
+
+- **v1.2.0:**
+    - Integração com gateway de pagamento real (Stripe/PagSeguro)
+    - Webhooks para notificações de pagamento
+
+- **v1.3.0:**
+    - Sistema de cupons de desconto
+    - Promoções e ofertas especiais
+
+- **v1.4.0:**
+    - Histórico de navegação
+    - Sistema de recomendações de produtos
+
+- **v1.5.0:**
+    - Documentação interativa via Swagger UI (`/swagger-ui.html`)
+    - OpenAPI 3.0
 
 ---
 
 > **Suporte:** Para dúvidas ou reportar bugs, abra uma *issue* no repositório oficial ou entre em contato com a equipe
 > de desenvolvimento.
-
