@@ -23,16 +23,16 @@ public class DotenvConfig implements ApplicationContextInitializer<ConfigurableA
             Map<String, Object> envMap = new HashMap<>();
             dotenv.entries().forEach(entry -> {
                 envMap.put(entry.getKey(), entry.getValue());
-                System.out.println("✅ Carregado: " + entry.getKey());
+                System.out.println("Carregado: " + entry.getKey());
             });
             
             environment.getPropertySources().addFirst(
                 new MapPropertySource("dotenvProperties", envMap)
             );
             
-            System.out.println("🎉 Arquivo .env carregado com sucesso!");
+            System.out.println("Arquivo .env carregado com sucesso!");
         } catch (Exception e) {
-            System.out.println("⚠️  Arquivo .env não encontrado. Usando variáveis de sistema.");
+            System.out.println("Arquivo .env não encontrado. Usando variáveis de sistema.");
         }
     }
 }
