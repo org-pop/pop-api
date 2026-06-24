@@ -26,7 +26,8 @@ public class AuthDTOs {
             @NotBlank(message = "Senha é obrigatória")
             @Size(min = 6, message = "Senha deve ter no mínimo 6 caracteres")
             String password
-    ) {}
+    ) {
+    }
 
     public record LoginRequest(
             @NotBlank(message = "Email é obrigatório")
@@ -35,7 +36,9 @@ public class AuthDTOs {
 
             @NotBlank(message = "Senha é obrigatória")
             String password
-    ) {}
+    ) {
+    }
 
-    public record AuthResponse(String token, String email, String name) {}
+    public record AuthResponse(String token, String email, String name) {
+    }
 }
