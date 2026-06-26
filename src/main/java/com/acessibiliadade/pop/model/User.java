@@ -39,5 +39,5 @@ public class User {
 
     @Column(name = "account_balance", precision = 10, scale = 2)
     @ColumnDefault("0.0")
-    private BigDecimal accountBalance;
+    private BigDecimal accountBalance = BigDecimal.ZERO;
 }
