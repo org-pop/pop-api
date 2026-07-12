@@ -1,10 +1,6 @@
 package com.acessibiliadade.pop.enums;
 
-/**
- * Status do pagamento
- */
 public enum PaymentStatus {
-
     PENDING("Aguardando pagamento"),
     PROCESSING("Processando"),
     APPROVED("Aprovado"),

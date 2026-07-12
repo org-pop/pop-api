@@ -2,6 +2,7 @@ package com.acessibiliadade.pop.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
@@ -85,6 +86,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleLocked(LockedException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(buildError(HttpStatus.UNAUTHORIZED, "Conta bloqueada"));
+    }
+
+    // 403 — usuário autenticado tentando acessar recurso de outro usuário
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(buildError(HttpStatus.FORBIDDEN, ex.getMessage()));
     }
 
     // 500 — qualquer erro não previsto (nunca expõe stack trace)

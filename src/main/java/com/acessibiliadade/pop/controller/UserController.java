@@ -1,8 +1,12 @@
 package com.acessibiliadade.pop.controller;
 
+import com.acessibiliadade.pop.dto.UserDTOs.UpdateUserRequest;
+import com.acessibiliadade.pop.dto.UserDTOs.UserResponse;
+import com.acessibiliadade.pop.exception.ResourceNotFoundException;
 import com.acessibiliadade.pop.model.User;
 import com.acessibiliadade.pop.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,34 +14,37 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
-
-    @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
-    }
+    private final UserService userService;
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public List<UserResponse> getAllUsers() {
+        return userService.getAllUsers().stream().map(UserResponse::from).toList();
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable UUID id) {
-        return userService.getUserById(id).orElse(null);
+    public UserResponse getUserById(@PathVariable UUID id) {
+        return userService.getUserById(id)
+                .map(UserResponse::from)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado: " + id));
     }
 
     @GetMapping("/email/{email}")
-    public User getUserByEmail(@PathVariable String email) {
-        return userService.getUserByEmail(email).orElse(null);
+    public UserResponse getUserByEmail(@PathVariable String email) {
+        return userService.getUserByEmail(email)
+                .map(UserResponse::from)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado: " + email));
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable UUID id, @RequestBody User user) {
-        return userService.updateUser(id, user);
+    public UserResponse updateUser(@PathVariable UUID id, @Valid @RequestBody UpdateUserRequest request) {
+        User patch = new User();
+        patch.setName(request.name());
+        patch.setEmail(request.email());
+        patch.setPassword(request.password());
+        return UserResponse.from(userService.updateUser(id, patch));
     }
 
     @DeleteMapping("/{id}")

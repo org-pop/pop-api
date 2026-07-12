@@ -1,6 +1,8 @@
 package com.acessibiliadade.pop.service;
 
 import com.acessibiliadade.pop.enums.OrderStatus;
+import com.acessibiliadade.pop.exception.BusinessException;
+import com.acessibiliadade.pop.exception.ResourceNotFoundException;
 import com.acessibiliadade.pop.model.*;
 import com.acessibiliadade.pop.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,22 +37,21 @@ public class OrderService {
     @Transactional
     public Order createOrderFromCart(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado: " + userId));
 
         Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Carrinho não encontrado para o usuário: " + userId));
 
         List<CartItem> cartItems = cartItemRepository.findByCart(cart);
 
         if (cartItems.isEmpty()) {
-            throw new RuntimeException("Cannot create order from empty cart");
+            throw new BusinessException("Não é possível criar um pedido a partir de um carrinho vazio");
         }
 
-        // Verificar estoque
         for (CartItem cartItem : cartItems) {
             Product product = cartItem.getProduct();
             if (product.getStock() < cartItem.getQuantity()) {
-                throw new RuntimeException("Insufficient stock for product: " + product.getName());
+                throw new BusinessException("Estoque insuficiente para o produto: " + product.getName());
             }
         }
 
@@ -102,7 +103,7 @@ public class OrderService {
 
     public Order getOrderById(Long orderId) {
         return orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado: " + orderId));
     }
 
     @Transactional
@@ -118,7 +119,7 @@ public class OrderService {
 
         if (order.getStatus() == OrderStatus.SHIPPED ||
                 order.getStatus() == OrderStatus.DELIVERED) {
-            throw new RuntimeException("Cannot cancel order that has been shipped or delivered");
+            throw new BusinessException("Pedido com status " + order.getStatus() + " não pode ser cancelado");
         }
 
         // Restaurar estoque

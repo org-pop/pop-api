@@ -2,6 +2,8 @@ package com.acessibiliadade.pop.service;
 
 import java.util.List;
 import com.acessibiliadade.pop.enums.PaymentStatus;
+import com.acessibiliadade.pop.exception.BusinessException;
+import com.acessibiliadade.pop.exception.ResourceNotFoundException;
 import com.acessibiliadade.pop.model.Order;
 import com.acessibiliadade.pop.model.Payment;
 import com.acessibiliadade.pop.repository.OrderRepository;
@@ -24,7 +26,7 @@ public class PaymentService {
     @Transactional
     public Payment createPayment(Long orderId, String method) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado: " + orderId));
 
         Payment payment = new Payment();
         payment.setOrder(order);
@@ -37,7 +39,7 @@ public class PaymentService {
     @Transactional
     public Payment processPayment(Long paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pagamento não encontrado: " + paymentId));
 
         // Simular processamento (aqui viria integração real com gateway)
         // Por simulação, vamos aprovar
@@ -48,13 +50,13 @@ public class PaymentService {
 
     public Payment getPaymentByOrder(Long orderId) {
         return paymentRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new RuntimeException("Payment not found for this order"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pagamento não encontrado para o pedido: " + orderId));
     }
 
     @Transactional
     public Payment updatePaymentStatus(Long paymentId, PaymentStatus status) {
         Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pagamento não encontrado: " + paymentId));
 
         payment.setStatus(status);
         return paymentRepository.save(payment);
@@ -63,7 +65,7 @@ public class PaymentService {
     @Transactional
     public Payment approvePayment(Long paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pagamento não encontrado: " + paymentId));
 
         payment.setStatus(PaymentStatus.APPROVED);
         return paymentRepository.save(payment);
@@ -72,7 +74,7 @@ public class PaymentService {
     @Transactional
     public Payment declinePayment(Long paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pagamento não encontrado: " + paymentId));
 
         payment.setStatus(PaymentStatus.DECLINED);
         return paymentRepository.save(payment);
@@ -81,10 +83,10 @@ public class PaymentService {
     @Transactional
     public Payment refundPayment(Long paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pagamento não encontrado: " + paymentId));
 
         if (payment.getStatus() != PaymentStatus.APPROVED) {
-            throw new RuntimeException("Only approved payments can be refunded");
+            throw new BusinessException("Apenas pagamentos aprovados podem ser estornados");
         }
 
         payment.setStatus(PaymentStatus.REFUNDED);

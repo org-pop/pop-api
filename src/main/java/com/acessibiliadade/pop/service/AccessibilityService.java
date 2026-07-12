@@ -27,10 +27,6 @@ public class AccessibilityService {
     private final TranslationService translationService;
     private final ColorAccessibilityService colorService;
 
-    // PERFIL DO USUÁRIO
-    /**
-     * Salva ou atualiza as preferências de acessibilidade do usuário.
-     */
     @Transactional
     public AccessibilitySettingsResponse saveSettings(UUID userId,
                                                       AccessibilitySettingsRequest request) {
@@ -42,7 +38,11 @@ public class AccessibilityService {
                 .orElse(new UserAccessibilitySettings());
 
         settings.setUser(user);
-        if (request.profiles() != null)          settings.setProfiles(request.profiles());
+        if (request.profiles() != null) {
+            settings.setProfiles(request.profiles().isEmpty()
+                    ? Set.of(AccessibilityProfile.NONE)
+                    : request.profiles());
+        }
         if (request.preferredLanguage() != null) settings.setPreferredLanguage(request.preferredLanguage());
         if (request.simplifiedLanguage() != null) settings.setSimplifiedLanguage(request.simplifiedLanguage());
         if (request.screenReaderMode() != null)  settings.setScreenReaderMode(request.screenReaderMode());
@@ -53,14 +53,13 @@ public class AccessibilityService {
         return toResponse(settings);
     }
 
-    /**
-     * Busca as preferências de acessibilidade de um usuário.
-     */
     public AccessibilitySettingsResponse getSettings(UUID userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new ResourceNotFoundException("Usuário não encontrado: " + userId);
+        }
         UserAccessibilitySettings settings = settingsRepository
                 .findByUserId(userId)
                 .orElseGet(() -> {
-                    // Retorna configuração padrão se não existir
                     UserAccessibilitySettings def = new UserAccessibilitySettings();
                     def.setProfiles(Set.of(AccessibilityProfile.NONE));
                     return def;
@@ -68,38 +67,34 @@ public class AccessibilityService {
         return toResponse(settings);
     }
 
-    // PRODUTO ACESSÍVEL
-    /**
-     * Retorna um produto com todos os dados de acessibilidade:
-     * - Descrição detalhada para leitores de tela
-     * - Nomes das cores (para daltonismo)
-     * - Descrição traduzida para o idioma preferido do usuário
-     */
     public AccessibleProductResponse getAccessibleProduct(Long productId, UUID userId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado: " + productId));
 
-        // Busca configurações do usuário (pode ser null se não tiver conta)
         UserAccessibilitySettings settings = userId != null
                 ? settingsRepository.findByUserId(userId).orElse(null)
                 : null;
 
         String lang = settings != null ? settings.getPreferredLanguage() : "pt-BR";
         boolean screenReader = settings != null && Boolean.TRUE.equals(settings.getScreenReaderMode());
+        boolean simplified = settings != null && Boolean.TRUE.equals(settings.getSimplifiedLanguage());
 
-        // Traduz a descrição se o idioma preferido não for pt-BR
-        String translatedDescription = null;
-        if (!"pt-BR".equals(lang) && product.getDescription() != null) {
-            translatedDescription = translationService.translate(
-                    product.getDescription(), "pt", lang);
+        String description = product.getDescription();
+        String accessibleDesc = product.getAccessibleDescription();
+
+        if (simplified) {
+            description = shortenForSimplifiedLanguage(description);
+            accessibleDesc = shortenForSimplifiedLanguage(accessibleDesc);
         }
 
-        // Descreve as cores em linguagem natural (para daltonismo / leitores de tela)
+        String translatedDescription = null;
+        if (!"pt-BR".equals(lang) && description != null) {
+            translatedDescription = translationService.translate(description, "pt", lang);
+        }
+
         List<String> colorNames = colorService.describeColorPalette(product.getColorPalette());
         String colorDescription = colorNames.isEmpty() ? null : String.join(", ", colorNames);
 
-        // Para leitores de tela: enriquece a descrição acessível com nomes das cores
-        String accessibleDesc = product.getAccessibleDescription();
         if (screenReader && colorDescription != null && accessibleDesc != null) {
             accessibleDesc = accessibleDesc + " Cores predominantes: " + colorDescription + ".";
         }
@@ -111,7 +106,7 @@ public class AccessibilityService {
                 product.getRarity(),
                 product.getPrice(),
                 product.getStock(),
-                product.getDescription(),
+                description,
                 accessibleDesc,
                 product.getImageAltText(),
                 product.getImageUrl(),
@@ -122,11 +117,15 @@ public class AccessibilityService {
         );
     }
 
-    // FILTRO DE PRODUTOS POR ACESSIBILIDADE
-    /**
-     * Filtra produtos da lista de acordo com os perfis de acessibilidade do usuário.
-     * Produtos inadequados para o perfil são removidos ou marcados.
-     */
+    private static final int SIMPLIFIED_MAX_LENGTH = 120;
+
+    private String shortenForSimplifiedLanguage(String text) {
+        if (text == null || text.length() <= SIMPLIFIED_MAX_LENGTH) return text;
+        int cut = text.lastIndexOf('.', SIMPLIFIED_MAX_LENGTH);
+        if (cut < 40) cut = SIMPLIFIED_MAX_LENGTH;
+        return text.substring(0, cut).trim() + (cut < text.length() ? "…" : "");
+    }
+
     public List<Product> filterProductsByAccessibility(List<Product> products, UUID userId) {
         if (userId == null) return products;
 

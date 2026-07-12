@@ -1,5 +1,7 @@
 package com.acessibiliadade.pop.service;
 
+import com.acessibiliadade.pop.exception.DuplicateResourceException;
+import com.acessibiliadade.pop.exception.ResourceNotFoundException;
 import com.acessibiliadade.pop.model.User;
 import com.acessibiliadade.pop.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +42,7 @@ public class UserService implements UserDetailsService {
     public User createUser(User user) {
         Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
         if (existingUser.isPresent()) {
-            throw new RuntimeException("Email already exists: " + user.getEmail());
+            throw new DuplicateResourceException("Email já cadastrado: " + user.getEmail());
         }
         // Aplica o hash na senha
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -61,7 +63,7 @@ public class UserService implements UserDetailsService {
 
     public User updateUser(UUID id, User userDetails) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado: " + id));
 
         user.setName(userDetails.getName());
         user.setEmail(userDetails.getEmail());
@@ -76,7 +78,7 @@ public class UserService implements UserDetailsService {
 
     public void deleteUser(UUID id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado: " + id));
         userRepository.delete(user);
     }
 }

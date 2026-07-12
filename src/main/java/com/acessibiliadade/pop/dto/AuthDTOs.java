@@ -4,14 +4,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-// ============================================================
-// AUTH
-// ============================================================
+import java.util.UUID;
 
-/**
- * Payload de registro de usuário.
- * Use @Valid no controller para ativar as validações.
- */
 public class AuthDTOs {
 
     public record RegisterRequest(
@@ -39,6 +33,6 @@ public class AuthDTOs {
     ) {
     }
 
-    public record AuthResponse(String token, String email, String name) {
+    public record AuthResponse(String token, UUID userId, String email, String name) {
     }
 }

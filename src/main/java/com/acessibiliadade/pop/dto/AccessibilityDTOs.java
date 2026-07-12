@@ -9,7 +9,6 @@ import java.util.Set;
 
 public class AccessibilityDTOs {
 
-    // REQUEST — salvar/atualizar preferências do usuário
     public record AccessibilitySettingsRequest(
             Set<AccessibilityProfile> profiles,
 
@@ -29,7 +28,6 @@ public class AccessibilityDTOs {
             String colorTheme
     ) {}
 
-    // RESPONSE — preferências do usuário
     public record AccessibilitySettingsResponse(
             Set<AccessibilityProfile> profiles,
             String preferredLanguage,
@@ -39,12 +37,6 @@ public class AccessibilityDTOs {
             String colorTheme
     ) {}
 
-    // RESPONSE — produto adaptado para acessibilidade
-    /**
-     * Versão do produto enriquecida com dados de acessibilidade.
-     * Retornada quando o usuário tem screenReaderMode=true
-     * ou quando acessa GET /products/{id}/accessible
-     */
     public record AccessibleProductResponse(
             Long id,
             String name,
@@ -52,23 +44,16 @@ public class AccessibilityDTOs {
             String rarity,
             BigDecimal price,
             Integer stockQuantity,
-
-            // Descrição original
             String description,
-
-            // Campos de acessibilidade
             String accessibleDescription,
             String imageAltText,
             String imageUrl,
             String colorPalette,
             Boolean highContrast,
-
-            // Descrição traduzida (se i18n ativo)
             String translatedDescription,
             String language
     ) {}
 
-    // RESPONSE — idiomas disponíveis para tradução
     public record SupportedLanguage(String code, String name) {}
 
     public record SupportedLanguagesResponse(List<SupportedLanguage> languages) {}

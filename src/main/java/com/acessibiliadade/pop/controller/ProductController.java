@@ -1,8 +1,10 @@
 package com.acessibiliadade.pop.controller;
 
 import com.acessibiliadade.pop.model.Product;
+import com.acessibiliadade.pop.security.AuthorizationService;
+import com.acessibiliadade.pop.service.AccessibilityService;
 import com.acessibiliadade.pop.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -10,10 +12,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/products")
+@RequiredArgsConstructor
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
+    private final AccessibilityService accessibilityService;
+    private final AuthorizationService authorizationService;
 
     @PostMapping
     public Product create(@RequestBody Product product) {
@@ -22,7 +26,9 @@ public class ProductController {
 
     @GetMapping
     public List<Product> listAll() {
-        return productService.getAllProducts();
+        List<Product> products = productService.getAllProducts();
+        return accessibilityService.filterProductsByAccessibility(
+                products, authorizationService.currentUser().getId());
     }
 
     @GetMapping("/{id}")

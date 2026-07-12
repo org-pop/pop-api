@@ -1,5 +1,7 @@
 package com.acessibiliadade.pop.service;
 
+import com.acessibiliadade.pop.exception.BusinessException;
+import com.acessibiliadade.pop.exception.ResourceNotFoundException;
 import com.acessibiliadade.pop.model.Cart;
 import com.acessibiliadade.pop.model.CartItem;
 import com.acessibiliadade.pop.model.Product;
@@ -34,7 +36,7 @@ public class CartService {
         return cartRepository.findByUserId(userId)
                 .orElseGet(() -> {
                     User user = userRepository.findById(userId)
-                            .orElseThrow(() -> new RuntimeException("User not found"));
+                            .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado: " + userId));
                     Cart cart = new Cart();
                     cart.setUser(user);
                     return cartRepository.save(cart);
@@ -45,7 +47,7 @@ public class CartService {
     public CartItem addItemToCart(UUID userId, Long productId, Integer quantity) {
         Cart cart = getOrCreateCart(userId);
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado: " + productId));
 
         CartItem existingItem = cartItemRepository.findByCartAndProduct(cart, product).orElse(null);
 
@@ -70,10 +72,10 @@ public class CartService {
     public void removeItemFromCart(UUID userId, Long cartItemId) {
         Cart cart = getOrCreateCart(userId);
         CartItem cartItem = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new RuntimeException("Cart item not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Item do carrinho não encontrado: " + cartItemId));
 
         if (!cartItem.getCart().getId().equals(cart.getId())) {
-            throw new RuntimeException("Item does not belong to user's cart");
+            throw new BusinessException("Item não pertence ao carrinho do usuário");
         }
 
         cartItemRepository.delete(cartItem);
@@ -88,10 +90,10 @@ public class CartService {
 
         Cart cart = getOrCreateCart(userId);
         CartItem cartItem = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new RuntimeException("Cart item not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Item do carrinho não encontrado: " + cartItemId));
 
         if (!cartItem.getCart().getId().equals(cart.getId())) {
-            throw new RuntimeException("Item does not belong to user's cart");
+            throw new BusinessException("Item não pertence ao carrinho do usuário");
         }
 
         cartItem.setQuantity(quantity);

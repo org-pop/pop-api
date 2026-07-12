@@ -3,10 +3,6 @@ package com.acessibiliadade.pop.dto;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
-/**
- * DTOs do produto com validações.
- * Substitua os DTOs existentes por estes.
- */
 public class ProductDTOs {
 
     public record ProductRequest(

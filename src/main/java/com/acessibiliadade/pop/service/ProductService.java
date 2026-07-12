@@ -1,5 +1,7 @@
 package com.acessibiliadade.pop.service;
 
+import com.acessibiliadade.pop.exception.BusinessException;
+import com.acessibiliadade.pop.exception.ResourceNotFoundException;
 import com.acessibiliadade.pop.model.Product;
 import com.acessibiliadade.pop.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,7 @@ public class ProductService {
 
     public Product getProductById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado: " + id));
     }
 
     public Product updateProduct(Long id, Product productDetails) {
@@ -71,7 +73,7 @@ public class ProductService {
         int newStock = product.getStock() + quantity;
 
         if (newStock < 0) {
-            throw new RuntimeException("Insufficient stock! Current stock: " + product.getStock());
+            throw new BusinessException("Estoque insuficiente. Estoque atual: " + product.getStock());
         }
 
         product.setStock(newStock);

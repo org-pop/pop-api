@@ -17,17 +17,11 @@ public class AuthController {
 
     private final AuthService authService;
 
-    /**
-     * Registro — valida name, email (formato) e password (min 6 chars)     * antes de chegar no service.
-     */
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
     }
 
-    /**
-     * Login — valida email e senha não vazios antes de autenticar.
-     */
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
