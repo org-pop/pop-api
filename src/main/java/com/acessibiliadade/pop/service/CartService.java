@@ -45,14 +45,24 @@ public class CartService {
 
     @Transactional
     public CartItem addItemToCart(UUID userId, Long productId, Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new BusinessException("Quantidade deve ser maior que zero");
+        }
+
         Cart cart = getOrCreateCart(userId);
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado: " + productId));
 
         CartItem existingItem = cartItemRepository.findByCartAndProduct(cart, product).orElse(null);
+        int newQuantity = existingItem != null ? existingItem.getQuantity() + quantity : quantity;
+
+        if (newQuantity > product.getStock()) {
+            throw new BusinessException("Estoque insuficiente para o produto: " + product.getName()
+                    + " (disponível: " + product.getStock() + ", solicitado: " + newQuantity + ")");
+        }
 
         if (existingItem != null) {
-            existingItem.setQuantity(existingItem.getQuantity() + quantity);
+            existingItem.setQuantity(newQuantity);
             return cartItemRepository.save(existingItem);
         }
 
@@ -94,6 +104,12 @@ public class CartService {
 
         if (!cartItem.getCart().getId().equals(cart.getId())) {
             throw new BusinessException("Item não pertence ao carrinho do usuário");
+        }
+
+        Product product = cartItem.getProduct();
+        if (quantity > product.getStock()) {
+            throw new BusinessException("Estoque insuficiente para o produto: " + product.getName()
+                    + " (disponível: " + product.getStock() + ", solicitado: " + quantity + ")");
         }
 
         cartItem.setQuantity(quantity);

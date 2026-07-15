@@ -5,6 +5,7 @@ import com.acessibiliadade.pop.security.AuthorizationService;
 import com.acessibiliadade.pop.service.AccessibilityService;
 import com.acessibiliadade.pop.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ public class ProductController {
     private final AuthorizationService authorizationService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public Product create(@RequestBody Product product) {
         return productService.createProduct(product);
     }
@@ -37,11 +39,13 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Product update(@PathVariable Long id, @RequestBody Product product) {
         return productService.updateProduct(id, product);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id) {
         productService.deleteProduct(id);
     }
@@ -73,6 +77,7 @@ public class ProductController {
     }
 
     @PatchMapping("/{id}/stock")
+    @PreAuthorize("hasRole('ADMIN')")
     public Product updateStock(@PathVariable Long id, @RequestParam Integer quantity) {
         return productService.updateStock(id, quantity);
     }

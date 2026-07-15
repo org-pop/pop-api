@@ -70,4 +70,8 @@ public class Product {
      */
     @Column(name = "high_contrast")
     private Boolean highContrast = false; // NOVO
+
+    @Version
+    @Column(name = "version")
+    private Long version;
 }

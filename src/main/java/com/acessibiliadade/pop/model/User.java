@@ -40,4 +40,8 @@ public class User {
     @Column(name = "account_balance", precision = 10, scale = 2)
     @ColumnDefault("0.0")
     private BigDecimal accountBalance = BigDecimal.ZERO;
+
+    @Column(name = "role", nullable = false, length = 20)
+    @ColumnDefault("'ROLE_USER'")
+    private String role = "ROLE_USER";
 }

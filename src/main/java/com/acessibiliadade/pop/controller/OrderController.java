@@ -7,6 +7,7 @@ import com.acessibiliadade.pop.security.AuthorizationService;
 import com.acessibiliadade.pop.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,9 +47,9 @@ public class OrderController {
     }
 
     @PutMapping("/{orderId}/status")
+    @PreAuthorize("hasRole('ADMIN')")
     public Order updateStatus(@PathVariable Long orderId,
                               @RequestParam OrderStatus status) {
-        assertOrderOwnership(orderService.getOrderById(orderId));
         return orderService.updateOrderStatus(orderId, status);
     }
 

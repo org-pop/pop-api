@@ -65,10 +65,18 @@ public class OrderService {
 
         BigDecimal total = BigDecimal.ZERO;
 
-        // Criar itens do pedido e atualizar estoque
+        // Criar itens do pedido e atualizar estoque com pessimistic lock (evita TOCTOU)
         for (CartItem cartItem : cartItems) {
-            Product product = cartItem.getProduct();
             Integer quantity = cartItem.getQuantity();
+            Long productId = cartItem.getProduct().getId();
+
+            Product product = productRepository.findByIdForUpdate(productId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado: " + productId));
+
+            if (product.getStock() < quantity) {
+                throw new BusinessException("Estoque insuficiente para o produto: " + product.getName());
+            }
+
             BigDecimal unitPrice = product.getPrice();
             BigDecimal itemTotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
 
@@ -80,7 +88,6 @@ public class OrderService {
 
             orderItemRepository.save(orderItem);
 
-            // Atualizar estoque
             product.setStock(product.getStock() - quantity);
             productRepository.save(product);
 
@@ -117,15 +124,21 @@ public class OrderService {
     public void cancelOrder(Long orderId) {
         Order order = getOrderById(orderId);
 
+        if (order.getStatus() == OrderStatus.CANCELLED) {
+            throw new BusinessException("Pedido já está cancelado");
+        }
+
         if (order.getStatus() == OrderStatus.SHIPPED ||
                 order.getStatus() == OrderStatus.DELIVERED) {
             throw new BusinessException("Pedido com status " + order.getStatus() + " não pode ser cancelado");
         }
 
-        // Restaurar estoque
+        // Restaurar estoque com pessimistic lock (evita corrida com checkouts concorrentes)
         List<OrderItem> orderItems = orderItemRepository.findByOrder(order);
         for (OrderItem item : orderItems) {
-            Product product = item.getProduct();
+            Long productId = item.getProduct().getId();
+            Product product = productRepository.findByIdForUpdate(productId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado: " + productId));
             product.setStock(product.getStock() + item.getQuantity());
             productRepository.save(product);
         }

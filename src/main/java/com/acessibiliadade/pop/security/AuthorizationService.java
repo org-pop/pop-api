@@ -1,7 +1,9 @@
 package com.acessibiliadade.pop.security;
 
 import com.acessibiliadade.pop.exception.ResourceNotFoundException;
+import com.acessibiliadade.pop.model.Order;
 import com.acessibiliadade.pop.model.User;
+import com.acessibiliadade.pop.repository.OrderRepository;
 import com.acessibiliadade.pop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -17,6 +19,7 @@ import java.util.UUID;
 public class AuthorizationService {
 
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
 
     public User currentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -31,6 +34,15 @@ public class AuthorizationService {
         UUID current = currentUser().getId();
         if (!current.equals(userIdFromPath)) {
             throw new AccessDeniedException("Você não tem permissão para acessar recursos de outro usuário");
+        }
+    }
+
+    public void assertOrderOwnership(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado: " + orderId));
+        UUID current = currentUser().getId();
+        if (order.getUser() == null || !current.equals(order.getUser().getId())) {
+            throw new AccessDeniedException("Você não tem permissão para acessar este pedido");
         }
     }
 }

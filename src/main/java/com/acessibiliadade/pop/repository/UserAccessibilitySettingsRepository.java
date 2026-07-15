@@ -9,6 +9,6 @@ import java.util.UUID;
 
 @Repository
 public interface UserAccessibilitySettingsRepository extends JpaRepository<UserAccessibilitySettings, Long> {
-    // CORRIGIDO: User.id é UUID
+
     Optional<UserAccessibilitySettings> findByUserId(UUID userId);
 }
