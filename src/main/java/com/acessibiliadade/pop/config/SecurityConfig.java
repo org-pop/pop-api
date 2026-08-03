@@ -17,6 +17,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+// Habilita @PreAuthorize nos controllers — usado para restringir ações administrativas
+// (criação/edição de produtos, mudança manual de status de pedido).
 @EnableMethodSecurity
 public class SecurityConfig {
 

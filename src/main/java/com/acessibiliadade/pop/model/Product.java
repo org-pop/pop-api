@@ -71,6 +71,9 @@ public class Product {
     @Column(name = "high_contrast")
     private Boolean highContrast = false; // NOVO
 
+    // Optimistic locking. Escritas concorrentes ao mesmo produto (fora do checkout,
+    // que usa pessimistic lock) recebem OptimisticLockException em vez de sobrescrever
+    // silenciosamente a versão anterior.
     @Version
     @Column(name = "version")
     private Long version;

@@ -9,7 +9,7 @@ import com.acessibiliadade.pop.model.Order;
 import com.acessibiliadade.pop.model.Payment;
 import com.acessibiliadade.pop.repository.OrderRepository;
 import com.acessibiliadade.pop.repository.PaymentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,19 +17,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@RequiredArgsConstructor
 public class PaymentService {
 
-    @Autowired
-    private PaymentRepository paymentRepository;
-
-    @Autowired
-    private OrderRepository orderRepository;
+    private final PaymentRepository paymentRepository;
+    private final OrderRepository orderRepository;
 
     @Transactional
     public Payment createPayment(Long orderId, String method) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado: " + orderId));
 
+        // A unique constraint no banco já garante um pagamento por pedido, mas checamos
+        // aqui para devolver 400 com mensagem clara em vez de 500 por violação de constraint.
         paymentRepository.findByOrderId(orderId).ifPresent(existing -> {
             throw new BusinessException("Já existe um pagamento para este pedido (id " + existing.getId() + ")");
         });
@@ -103,6 +103,8 @@ public class PaymentService {
         return paymentRepository.findByStatusAndOrder_User_Id(status, userId);
     }
 
+    // Precisa ser @Transactional para atravessar Payment -> Order -> User (ambos LAZY)
+    // sem estourar LazyInitializationException fora da sessão do Hibernate.
     @Transactional(readOnly = true)
     public void assertOwnership(Long paymentId, UUID userId) {
         Payment payment = paymentRepository.findById(paymentId)

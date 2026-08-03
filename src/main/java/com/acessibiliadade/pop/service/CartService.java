@@ -10,7 +10,7 @@ import com.acessibiliadade.pop.repository.CartItemRepository;
 import com.acessibiliadade.pop.repository.CartRepository;
 import com.acessibiliadade.pop.repository.ProductRepository;
 import com.acessibiliadade.pop.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,19 +18,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class CartService {
 
-    @Autowired
-    private CartRepository cartRepository;
-
-    @Autowired
-    private CartItemRepository cartItemRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ProductRepository productRepository;
+    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
+    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
     public Cart getOrCreateCart(UUID userId) {
         return cartRepository.findByUserId(userId)
@@ -53,6 +47,8 @@ public class CartService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado: " + productId));
 
+        // Sempre validar contra a soma (item existente + delta), não só o delta.
+        // Sem isso, chamar add N vezes com quantidade=1 driblaria o teto de estoque.
         CartItem existingItem = cartItemRepository.findByCartAndProduct(cart, product).orElse(null);
         int newQuantity = existingItem != null ? existingItem.getQuantity() + quantity : quantity;
 

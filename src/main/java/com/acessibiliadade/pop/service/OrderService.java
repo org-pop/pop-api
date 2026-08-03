@@ -5,7 +5,7 @@ import com.acessibiliadade.pop.exception.BusinessException;
 import com.acessibiliadade.pop.exception.ResourceNotFoundException;
 import com.acessibiliadade.pop.model.*;
 import com.acessibiliadade.pop.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,25 +14,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class OrderService {
 
-    @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
-    private OrderItemRepository orderItemRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private CartRepository cartRepository;
-
-    @Autowired
-    private CartItemRepository cartItemRepository;
-
-    @Autowired
-    private ProductRepository productRepository;
+    private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final UserRepository userRepository;
+    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
+    private final ProductRepository productRepository;
 
     @Transactional
     public Order createOrderFromCart(UUID userId) {
@@ -48,12 +38,8 @@ public class OrderService {
             throw new BusinessException("Não é possível criar um pedido a partir de um carrinho vazio");
         }
 
-        for (CartItem cartItem : cartItems) {
-            Product product = cartItem.getProduct();
-            if (product.getStock() < cartItem.getQuantity()) {
-                throw new BusinessException("Estoque insuficiente para o produto: " + product.getName());
-            }
-        }
+        // O estoque é validado dentro do loop com pessimistic lock abaixo, sob a trava —
+        // uma pré-checagem aqui seria redundante e correria fora do lock.
 
         // Criar pedido
         Order order = new Order();
@@ -65,7 +51,9 @@ public class OrderService {
 
         BigDecimal total = BigDecimal.ZERO;
 
-        // Criar itens do pedido e atualizar estoque com pessimistic lock (evita TOCTOU)
+        // Re-busca cada produto com SELECT FOR UPDATE aqui dentro do loop.
+        // Dois checkouts simultâneos do mesmo produto serializam nessa linha,
+        // então o check de estoque e o decremento acontecem sem janela de corrida.
         for (CartItem cartItem : cartItems) {
             Integer quantity = cartItem.getQuantity();
             Long productId = cartItem.getProduct().getId();
@@ -124,6 +112,8 @@ public class OrderService {
     public void cancelOrder(Long orderId) {
         Order order = getOrderById(orderId);
 
+        // Idempotência: sem essa guarda, chamar cancel duas vezes restauraria o estoque
+        // duas vezes e criaria unidades fantasma.
         if (order.getStatus() == OrderStatus.CANCELLED) {
             throw new BusinessException("Pedido já está cancelado");
         }

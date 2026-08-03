@@ -2,8 +2,9 @@
 
 API RESTful em Java + Spring Boot para uma loja de Funko Pops, com foco em acessibilidade.
 
-- Autenticação JWT
+- Autenticação JWT + autorização por dono do recurso e por papel (`ROLE_USER` / `ROLE_ADMIN`)
 - CRUD de usuários, produtos, carrinho, pedidos e pagamentos
+- Checkout com controle de estoque concorrente (pessimistic lock)
 - Configurações de acessibilidade por usuário (idioma, contraste, leitor de tela)
 - Descrição acessível de produtos (paleta de cores, alt-text, tradução)
 
@@ -80,18 +81,17 @@ Documentação completa com payloads e exemplos em [`docs/docs.md`](docs/docs.md
 
 Resumo:
 
-| Recurso | Base path | Público |
-|:--------|:----------|:--------|
-| Autenticação | `/api/auth` | Sim |
-| Usuários | `/api/users` | Não |
-| Produtos | `/products` | Não |
-| Carrinho | `/cart` | Não (só o dono) |
-| Itens de carrinho | `/cart-items` | Não |
-| Pedidos | `/orders` | Não (só o dono) |
-| Pagamentos | `/payments` | Não |
-| Endereços | `/addresses` | Não |
-| Telefones | `/phones` | Não |
-| Acessibilidade | `/api/accessibility` | `/languages` público; resto protegido |
+| Recurso | Base path | Acesso |
+|:--------|:----------|:-------|
+| Autenticação | `/api/auth` | Público |
+| Usuários | `/api/users` | Dono do recurso; `GET /api/users` só `ROLE_ADMIN` |
+| Produtos | `/products` | Leitura: qualquer autenticado. Escrita: `ROLE_ADMIN` |
+| Carrinho | `/cart` | Dono do recurso |
+| Pedidos | `/orders` | Dono do recurso; mudança de status só `ROLE_ADMIN` |
+| Pagamentos | `/payments` | Dono do pedido associado |
+| Endereços | `/addresses` | Dono do recurso |
+| Telefones | `/phones` | Dono do recurso |
+| Acessibilidade | `/api/accessibility` | `/languages` público; resto exige dono |
 
 Todos os endpoints protegidos exigem o header:
 
@@ -99,7 +99,12 @@ Todos os endpoints protegidos exigem o header:
 Authorization: Bearer <token>
 ```
 
-Endpoints que carregam `{userId}` no path validam ownership: só o dono do token pode acessar. Caso contrário → **403 Forbidden**.
+**Regras de autorização:**
+
+- Endpoints com `{userId}` no path validam ownership contra o token: só o dono acessa. Caso contrário → **403 Forbidden**.
+- Endpoints com `{orderId}` / `{paymentId}` validam ownership pelo dono do pedido associado.
+- Operações administrativas (criar/editar/excluir produtos, alterar status de pedido, listar todos os usuários) exigem `ROLE_ADMIN`. Novos usuários são criados com `ROLE_USER`; para promover, atualize `users.role` no banco.
+- Token inválido ou expirado → **401** em JSON com o mesmo formato dos demais erros.
 
 ## Estrutura
 

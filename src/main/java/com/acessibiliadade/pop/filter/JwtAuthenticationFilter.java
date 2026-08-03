@@ -72,6 +72,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (JwtException | UsernameNotFoundException | IllegalArgumentException ex) {
+            // Filtros rodam antes do DispatcherServlet, então o @RestControllerAdvice não pega
+            // exceções daqui. Precisamos escrever a resposta 401 na mão.
             writeUnauthorized(response, "Token inválido ou expirado");
             return;
         }

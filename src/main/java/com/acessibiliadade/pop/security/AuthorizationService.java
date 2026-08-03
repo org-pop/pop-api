@@ -37,6 +37,8 @@ public class AuthorizationService {
         }
     }
 
+    // Wrapper para controllers que só têm o orderId em mãos (ex.: PaymentController).
+    // Centraliza a busca + comparação para não replicar essa lógica em cada endpoint.
     public void assertOrderOwnership(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado: " + orderId));

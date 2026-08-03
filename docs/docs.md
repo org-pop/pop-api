@@ -27,7 +27,10 @@
 - Timestamps em **ISO-8601** (`2026-07-12T14:30:00`).
 - Dinheiro em `BigDecimal` (duas casas).
 - Endpoints com `{userId}` no path validam ownership contra o token — dono errado retorna **403**.
+- Endpoints com `{orderId}` / `{paymentId}` validam pelo dono do pedido associado.
+- Operações administrativas (criar/editar/excluir produtos, alterar status de pedido, listar todos os usuários) exigem `ROLE_ADMIN`. Todos os novos cadastros nascem com `ROLE_USER`.
 - `POST /api/auth/**` e `GET /api/accessibility/languages` são públicos. Todo o resto exige `Authorization: Bearer <token>`.
+- Token inválido ou expirado → **401** com corpo JSON no mesmo formato dos demais erros.
 
 ---
 
@@ -81,9 +84,9 @@
 
 `/api/users` — todos os endpoints protegidos.
 
-### 2.1 Listar usuários
+### 2.1 Listar usuários (admin)
 
-`GET /api/users`
+`GET /api/users` — **exige `ROLE_ADMIN`**. Usuários comuns recebem **403**.
 
 **200 OK** — array de `UserResponse`:
 
@@ -99,18 +102,18 @@
 ]
 ```
 
-### 2.2 Buscar por ID
+### 2.2 Buscar por ID (dono)
 
-`GET /api/users/{id}` — `id` = UUID
-**404** se não existir.
+`GET /api/users/{id}` — `id` = UUID. Só o próprio usuário.
+**404** se não existir; **403** se `id` for de outro usuário.
 
-### 2.3 Buscar por email
+### 2.3 Buscar por email (dono)
 
-`GET /api/users/email/{email}`
+`GET /api/users/email/{email}` — só se `email` for o do próprio usuário.
 
-### 2.4 Atualizar usuário
+### 2.4 Atualizar usuário (dono)
 
-`PUT /api/users/{id}`
+`PUT /api/users/{id}` — só o próprio usuário.
 
 ```json
 {
@@ -122,19 +125,19 @@
 
 `password` é opcional — se omitido, senha não muda. Se enviado, mínimo 6 chars.
 
-### 2.5 Deletar usuário
+### 2.5 Deletar usuário (dono)
 
-`DELETE /api/users/{id}` → **204 No Content**
+`DELETE /api/users/{id}` → **204 No Content**. Só o próprio usuário.
 
 ---
 
 ## 3. Produtos
 
-`/products` — todos protegidos.
+`/products` — leitura para qualquer autenticado; escrita exige `ROLE_ADMIN`.
 
-### 3.1 Criar produto
+### 3.1 Criar produto (admin)
 
-`POST /products`
+`POST /products` — **exige `ROLE_ADMIN`**.
 
 ```json
 {
@@ -164,13 +167,13 @@ Retorna lista filtrada pelas configurações de acessibilidade do usuário logad
 
 `GET /products/{id}` — `id` = Long
 
-### 3.4 Atualizar produto
+### 3.4 Atualizar produto (admin)
 
-`PUT /products/{id}` — mesmo corpo do POST.
+`PUT /products/{id}` — mesmo corpo do POST. **Exige `ROLE_ADMIN`**.
 
-### 3.5 Deletar produto
+### 3.5 Deletar produto (admin)
 
-`DELETE /products/{id}`
+`DELETE /products/{id}` — **exige `ROLE_ADMIN`**.
 
 ### 3.6 Buscar por franquia
 
@@ -198,9 +201,9 @@ Exemplo: `GET /products/rarity/RARO`
 
 `GET /products/search?name=Vader`
 
-### 3.11 Ajustar estoque
+### 3.11 Ajustar estoque (admin)
 
-`PATCH /products/{id}/stock?quantity=5`
+`PATCH /products/{id}/stock?quantity=5` — **exige `ROLE_ADMIN`**.
 
 `quantity` positivo adiciona, negativo remove.
 
@@ -225,6 +228,8 @@ Exemplo: `GET /products/rarity/RARO`
 }
 ```
 
+**Erros:** **400** se `quantity <= 0` ou se a soma no carrinho ultrapassar o estoque disponível do produto.
+
 ### 4.2 Ver carrinho
 
 `GET /cart/{userId}` → array de `CartItem`.
@@ -232,6 +237,8 @@ Exemplo: `GET /products/rarity/RARO`
 ### 4.3 Atualizar quantidade
 
 `PUT /cart/{userId}/item/{itemId}?quantity=5`
+
+`quantity <= 0` remove o item. `quantity` maior que o estoque disponível retorna **400**.
 
 ### 4.4 Remover um item
 
@@ -245,27 +252,7 @@ Exemplo: `GET /products/rarity/RARO`
 
 ## 5. Itens do carrinho
 
-`/cart-items` — endpoints alternativos que trabalham diretamente com IDs numéricos de carrinho/item.
-
-### 5.1 Criar item
-
-`POST /cart-items?cartId=5&productId=1&quantity=2`
-
-### 5.2 Listar itens de um carrinho
-
-`GET /cart-items/cart/{cartId}`
-
-### 5.3 Atualizar quantidade
-
-`PUT /cart-items/{cartItemId}?quantity=3`
-
-### 5.4 Deletar item
-
-`DELETE /cart-items/{cartItemId}`
-
-### 5.5 Limpar carrinho por ID
-
-`DELETE /cart-items/cart/{cartId}/clear`
+> **Aviso:** os endpoints `/cart-items` operam diretamente por `cartId` numérico e ainda não têm verificação de ownership. Não use em cliente público — prefira `/cart/{userId}/...` (seção 4), que valida o dono do carrinho.
 
 ---
 
@@ -289,7 +276,7 @@ Exemplo: `GET /products/rarity/RARO`
 }
 ```
 
-Erros: **422** se estoque insuficiente, **400** se carrinho vazio.
+Erros: **400** se estoque insuficiente ou carrinho vazio. O checkout usa `SELECT FOR UPDATE` no produto, então dois checkouts simultâneos serializam e não driblam o estoque.
 
 ### 6.2 Listar pedidos do usuário
 
@@ -303,9 +290,9 @@ Erros: **422** se estoque insuficiente, **400** se carrinho vazio.
 
 `GET /orders/{orderId}/items` → array de `OrderItem`.
 
-### 6.5 Atualizar status
+### 6.5 Atualizar status (admin)
 
-`PUT /orders/{orderId}/status?status=SHIPPED`
+`PUT /orders/{orderId}/status?status=SHIPPED` — **exige `ROLE_ADMIN`**.
 
 Valores válidos: `PENDING`, `PROCESSING`, `SHIPPED`, `DELIVERED`, `CANCELLED`.
 
@@ -313,17 +300,21 @@ Valores válidos: `PENDING`, `PROCESSING`, `SHIPPED`, `DELIVERED`, `CANCELLED`.
 
 `DELETE /orders/{orderId}/cancel`
 
+O dono do pedido pode cancelar enquanto o status for `PENDING` ou `PROCESSING`. Pedidos já `SHIPPED` / `DELIVERED` retornam **400**. Cancelar um pedido já `CANCELLED` também retorna **400** (evita restaurar estoque duas vezes).
+
 ---
 
 ## 7. Pagamentos
 
-`/payments` — protegido.
+`/payments` — todos os endpoints exigem que o usuário logado seja **dono do pedido associado ao pagamento** (**403** caso contrário).
 
 ### 7.1 Criar pagamento
 
 `POST /payments/order/{orderId}?method=CREDIT_CARD`
 
 `method`: `CREDIT_CARD`, `DEBIT_CARD`, `PIX`, `BOLETO`.
+
+Cada pedido só pode ter **um** pagamento. Chamar de novo para o mesmo `orderId` retorna **400**.
 
 **Retorno:**
 
@@ -359,7 +350,7 @@ Valores válidos: `PENDING`, `PROCESSING`, `SHIPPED`, `DELIVERED`, `CANCELLED`.
 
 ### 7.7 Listar por status
 
-`GET /payments/status/{status}` — ex.: `/payments/status/APPROVED`
+`GET /payments/status/{status}` — ex.: `/payments/status/APPROVED`. Retorna **apenas os pagamentos do usuário logado** com aquele status.
 
 ### 7.8 Atualizar status manualmente
 
@@ -556,12 +547,12 @@ Retorna o produto **traduzido para o idioma preferido do usuário logado**, com 
 | 200 | Sucesso em GET/PUT/PATCH |
 | 201 | Criado (POST) |
 | 204 | Sucesso sem corpo (DELETE) |
-| 400 | Parâmetros inválidos ou payload malformado |
+| 400 | Payload malformado, parâmetro inválido ou regra de negócio violada (estoque insuficiente, pagamento duplicado, pedido já cancelado etc.) |
 | 401 | Token ausente, inválido ou expirado |
-| 403 | Autenticado, mas sem permissão (ownership check) |
+| 403 | Autenticado, mas sem permissão (ownership check ou papel `ROLE_ADMIN` ausente) |
 | 404 | Recurso não encontrado |
-| 409 | Conflito (ex.: email já usado) |
-| 422 | Regra de negócio violada (ex.: estoque insuficiente) |
+| 409 | Conflito (ex.: email já usado no cadastro) |
+| 422 | Erro de validação em campos do payload (`@Valid`) |
 | 500 | Erro inesperado do servidor |
 
 **Formato do corpo de erro:**

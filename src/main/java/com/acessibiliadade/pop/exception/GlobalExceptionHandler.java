@@ -1,5 +1,6 @@
 package com.acessibiliadade.pop.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -58,6 +59,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleDuplicate(DuplicateResourceException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(buildError(HttpStatus.CONFLICT, ex.getMessage()));
+    }
+
+    // 409 — violação de constraint do banco (ex.: corrida no INSERT de pagamento que
+    // passa pela checagem da aplicação e esbarra na unique constraint de order_id)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleDataIntegrity(DataIntegrityViolationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(buildError(HttpStatus.CONFLICT,
+                        "Conflito: a operação viola uma restrição de unicidade ou integridade"));
     }
 
     // 401 — credenciais inválidas (nossa exception customizada)
