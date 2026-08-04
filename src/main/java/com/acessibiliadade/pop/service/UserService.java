@@ -55,8 +55,10 @@ public class UserService implements UserDetailsService {
         return userRepository.findById(id);
     }
 
+    // Busca sem diferenciar maiúsculas/minúsculas: email é case-insensitive na prática,
+    // então "Joao@x.com" e "joao@x.com" devem resolver para o mesmo usuário.
     public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmailIgnoreCase(email);
     }
 
     public User updateUser(UUID id, User userDetails) {

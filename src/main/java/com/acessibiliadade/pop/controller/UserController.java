@@ -7,9 +7,12 @@ import com.acessibiliadade.pop.model.User;
 import com.acessibiliadade.pop.security.AuthorizationService;
 import com.acessibiliadade.pop.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +21,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Validated // habilita as constraints declaradas direto em @PathVariable/@RequestParam
 public class UserController {
 
     private final UserService userService;
@@ -37,13 +41,24 @@ public class UserController {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado: " + id));
     }
 
+    // O próprio usuário sempre pode se buscar; qualquer outro email exige ADMIN.
+    // A checagem vem antes da consulta para não virar um enumerador de emails cadastrados.
     @GetMapping("/email/{email}")
-    public UserResponse getUserByEmail(@PathVariable String email) {
+    public UserResponse getUserByEmail(
+            @PathVariable
+            @NotBlank(message = "Email é obrigatório")
+            @Email(message = "Email inválido")
+            String email) {
         User current = authorizationService.currentUser();
-        if (!current.getEmail().equalsIgnoreCase(email)) {
+        if (current.getEmail().equalsIgnoreCase(email)) {
+            return UserResponse.from(current);
+        }
+        if (!authorizationService.isAdmin(current)) {
             throw new AccessDeniedException("Você não tem permissão para acessar dados de outro usuário");
         }
-        return UserResponse.from(current);
+        return userService.getUserByEmail(email)
+                .map(UserResponse::from)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado: " + email));
     }
 
     @PutMapping("/{id}")

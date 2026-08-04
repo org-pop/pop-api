@@ -1,5 +1,7 @@
 package com.acessibiliadade.pop.exception;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +52,20 @@ public class GlobalExceptionHandler {
             fieldErrors.put(fe.getField(), fe.getDefaultMessage());
         }
         Map<String, Object> body = buildError(HttpStatus.UNPROCESSABLE_ENTITY, "Erro de validação nos campos enviados");
+        body.put("fields", fieldErrors);
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(body);
+    }
+
+    // 422 — validação de parâmetros de método (@PathVariable/@RequestParam anotados),
+    // que o Bean Validation reporta como ConstraintViolationException e não como o
+    // MethodArgumentNotValidException dos @RequestBody
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleConstraintViolation(ConstraintViolationException ex) {
+        Map<String, String> fieldErrors = new HashMap<>();
+        for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
+            fieldErrors.put(violation.getPropertyPath().toString(), violation.getMessage());
+        }
+        Map<String, Object> body = buildError(HttpStatus.UNPROCESSABLE_ENTITY, "Erro de validação nos parâmetros enviados");
         body.put("fields", fieldErrors);
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(body);
     }

@@ -18,6 +18,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthorizationService {
 
+    private static final String ROLE_ADMIN = "ROLE_ADMIN";
+
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
 
@@ -28,6 +30,10 @@ public class AuthorizationService {
         }
         return userRepository.findByEmail(details.getUsername())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário autenticado não encontrado"));
+    }
+
+    public boolean isAdmin(User user) {
+        return user != null && ROLE_ADMIN.equals(user.getRole());
     }
 
     public void assertOwnership(UUID userIdFromPath) {
