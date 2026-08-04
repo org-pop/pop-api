@@ -84,7 +84,7 @@ Resumo:
 | Recurso | Base path | Acesso |
 |:--------|:----------|:-------|
 | Autenticação | `/api/auth` | Público |
-| Usuários | `/api/users` | Dono do recurso; `GET /api/users` só `ROLE_ADMIN` |
+| Usuários | `/api/users` | Dono do recurso; `GET /api/users` e busca por email de terceiro só `ROLE_ADMIN` |
 | Produtos | `/products` | Leitura: qualquer autenticado. Escrita: `ROLE_ADMIN` |
 | Carrinho | `/cart` | Dono do recurso |
 | Pedidos | `/orders` | Dono do recurso; mudança de status só `ROLE_ADMIN` |

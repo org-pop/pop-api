@@ -107,9 +107,25 @@
 `GET /api/users/{id}` — `id` = UUID. Só o próprio usuário.
 **404** se não existir; **403** se `id` for de outro usuário.
 
-### 2.3 Buscar por email (dono)
+### 2.3 Buscar por email (dono ou admin)
 
-`GET /api/users/email/{email}` — só se `email` for o do próprio usuário.
+`GET /api/users/email/{email}`
+
+O próprio usuário sempre pode se buscar. Para consultar o email de **outra** pessoa é preciso `ROLE_ADMIN`.
+
+A comparação **não diferencia maiúsculas de minúsculas** — `MARIA@email.com` e `maria@email.com` resolvem para o mesmo usuário.
+
+**200 OK** — um `UserResponse` (mesmo formato de 2.1).
+
+| Situação | Resposta |
+|:---------|:---------|
+| Email do próprio usuário | **200** |
+| Email de terceiro, com `ROLE_ADMIN` e usuário existente | **200** |
+| Email de terceiro, sem `ROLE_ADMIN` | **403** |
+| Email de terceiro, com `ROLE_ADMIN` e usuário inexistente | **404** |
+| Email fora do formato válido | **422** |
+
+O **403** vem antes da consulta ao banco: para um usuário comum, email inexistente e email de terceiro respondem igual, então o endpoint não serve para descobrir quais emails estão cadastrados.
 
 ### 2.4 Atualizar usuário (dono)
 
@@ -552,8 +568,22 @@ Retorna o produto **traduzido para o idioma preferido do usuário logado**, com 
 | 403 | Autenticado, mas sem permissão (ownership check ou papel `ROLE_ADMIN` ausente) |
 | 404 | Recurso não encontrado |
 | 409 | Conflito (ex.: email já usado no cadastro) |
-| 422 | Erro de validação em campos do payload (`@Valid`) |
+| 422 | Erro de validação — em campos do payload (`@Valid`) ou em parâmetros de path/query anotados |
 | 500 | Erro inesperado do servidor |
+
+**Corpo do 422** — traz o mapa `fields` com o campo (ou parâmetro) e a respectiva mensagem:
+
+```json
+{
+  "timestamp": "2026-07-12T12:00:00",
+  "status": 422,
+  "error": "Unprocessable Entity",
+  "message": "Erro de validação nos parâmetros enviados",
+  "fields": {
+    "getUserByEmail.email": "Email inválido"
+  }
+}
+```
 
 **Formato do corpo de erro:**
 
