@@ -10,14 +10,13 @@
 2. [Usuários](#2-usuários)
 3. [Produtos](#3-produtos)
 4. [Carrinho](#4-carrinho)
-5. [Itens do carrinho](#5-itens-do-carrinho)
-6. [Pedidos](#6-pedidos)
-7. [Pagamentos](#7-pagamentos)
-8. [Endereços](#8-endereços)
-9. [Telefones](#9-telefones)
-10. [Acessibilidade](#10-acessibilidade)
-11. [Enums](#11-enums)
-12. [Códigos HTTP e erros](#12-códigos-http-e-erros)
+5. [Pedidos](#5-pedidos)
+6. [Pagamentos](#6-pagamentos)
+7. [Endereços](#7-endereços)
+8. [Telefones](#8-telefones)
+9. [Acessibilidade](#9-acessibilidade)
+10. [Enums](#10-enums)
+11. [Códigos HTTP e erros](#11-códigos-http-e-erros)
 
 ---
 
@@ -27,10 +26,14 @@
 - Timestamps em **ISO-8601** (`2026-07-12T14:30:00`).
 - Dinheiro em `BigDecimal` (duas casas).
 - Endpoints com `{userId}` no path validam ownership contra o token — dono errado retorna **403**.
-- Endpoints com `{orderId}` / `{paymentId}` validam pelo dono do pedido associado.
-- Operações administrativas (criar/editar/excluir produtos, alterar status de pedido, listar todos os usuários) exigem `ROLE_ADMIN`. Todos os novos cadastros nascem com `ROLE_USER`.
+- Endpoints com `{orderId}` / `{paymentId}` / `{addressId}` / `{phoneId}` validam pelo dono do recurso associado.
+- Operações administrativas exigem `ROLE_ADMIN`: CRUD de produtos, alteração de status de pedido e de pagamento, listagem de todos os usuários. Todos os novos cadastros nascem com `ROLE_USER`; para promover:
+  ```sql
+  UPDATE users SET role = 'ROLE_ADMIN' WHERE email = 'admin@exemplo.com';
+  ```
 - `POST /api/auth/**` e `GET /api/accessibility/languages` são públicos. Todo o resto exige `Authorization: Bearer <token>`.
 - Token inválido ou expirado → **401** com corpo JSON no mesmo formato dos demais erros.
+- Campos sensíveis (`password`, `role`) são anotados com `@JsonIgnore` na entidade `User` e nunca aparecem em respostas — nem mesmo quando o `User` vem embutido em `Order`, `Payment` etc.
 
 ---
 
@@ -143,7 +146,7 @@ O **403** vem antes da consulta ao banco: para um usuário comum, email inexiste
 
 ### 2.5 Deletar usuário (dono)
 
-`DELETE /api/users/{id}` → **204 No Content**. Só o próprio usuário.
+`DELETE /api/users/{id}` → **200 OK** (corpo vazio). Só o próprio usuário.
 
 ---
 
@@ -266,17 +269,11 @@ Exemplo: `GET /products/rarity/RARO`
 
 ---
 
-## 5. Itens do carrinho
-
-> **Aviso:** os endpoints `/cart-items` operam diretamente por `cartId` numérico e ainda não têm verificação de ownership. Não use em cliente público — prefira `/cart/{userId}/...` (seção 4), que valida o dono do carrinho.
-
----
-
-## 6. Pedidos
+## 5. Pedidos
 
 `/orders` — protegido; ownership verificado.
 
-### 6.1 Checkout (criar pedido a partir do carrinho)
+### 5.1 Checkout (criar pedido a partir do carrinho)
 
 `POST /orders/{userId}/checkout`
 
@@ -294,25 +291,25 @@ Exemplo: `GET /products/rarity/RARO`
 
 Erros: **400** se estoque insuficiente ou carrinho vazio. O checkout usa `SELECT FOR UPDATE` no produto, então dois checkouts simultâneos serializam e não driblam o estoque.
 
-### 6.2 Listar pedidos do usuário
+### 5.2 Listar pedidos do usuário
 
 `GET /orders/{userId}`
 
-### 6.3 Detalhes do pedido
+### 5.3 Detalhes do pedido
 
 `GET /orders/{orderId}/details`
 
-### 6.4 Itens do pedido
+### 5.4 Itens do pedido
 
 `GET /orders/{orderId}/items` → array de `OrderItem`.
 
-### 6.5 Atualizar status (admin)
+### 5.5 Atualizar status (admin)
 
 `PUT /orders/{orderId}/status?status=SHIPPED` — **exige `ROLE_ADMIN`**.
 
 Valores válidos: `PENDING`, `PROCESSING`, `SHIPPED`, `DELIVERED`, `CANCELLED`.
 
-### 6.6 Cancelar pedido
+### 5.6 Cancelar pedido
 
 `DELETE /orders/{orderId}/cancel`
 
@@ -320,17 +317,31 @@ O dono do pedido pode cancelar enquanto o status for `PENDING` ou `PROCESSING`. 
 
 ---
 
-## 7. Pagamentos
+## 6. Pagamentos
 
-`/payments` — todos os endpoints exigem que o usuário logado seja **dono do pedido associado ao pagamento** (**403** caso contrário).
+`/payments` — leitura e criação pelo **dono do pedido**; alterações de status só por **`ROLE_ADMIN`** (representam a autoridade do gateway/administrador, não do comprador).
 
-### 7.1 Criar pagamento
+### 6.1 Ciclo de vida (máquina de estados)
+
+Cada pagamento nasce em `PENDING` e só transita entre estados permitidos. Transições fora dessa tabela retornam **400** com mensagem `Transição de pagamento inválida: X -> Y`. Estados terminais (`DECLINED`, `REFUNDED`, `CANCELLED`) não têm saída.
+
+| De | Para | Endpoint |
+|:---|:---|:---|
+| `PENDING` | `PROCESSING` | `POST /payments/{id}/process` |
+| `PENDING` | `CANCELLED` | `PUT /payments/{id}/status?status=CANCELLED` |
+| `PROCESSING` | `APPROVED` | `POST /payments/{id}/approve` |
+| `PROCESSING` | `DECLINED` | `POST /payments/{id}/decline` |
+| `APPROVED` | `REFUNDED` | `POST /payments/{id}/refund` |
+
+Repetir a mesma transição (ex.: `approve` sobre pagamento já `APPROVED`) também retorna **400** com `Pagamento já está no status APPROVED`.
+
+### 6.2 Criar pagamento (dono do pedido)
 
 `POST /payments/order/{orderId}?method=CREDIT_CARD`
 
 `method`: `CREDIT_CARD`, `DEBIT_CARD`, `PIX`, `BOLETO`.
 
-Cada pedido só pode ter **um** pagamento. Chamar de novo para o mesmo `orderId` retorna **400**.
+Cada pedido só pode ter **um** pagamento. Chamar de novo para o mesmo `orderId` retorna **400**. A unique constraint no banco cobre corridas.
 
 **Retorno:**
 
@@ -339,48 +350,57 @@ Cada pedido só pode ter **um** pagamento. Chamar de novo para o mesmo `orderId`
   "id": 200,
   "order": { "id": 101 },
   "method": "CREDIT_CARD",
-  "status": "PENDING",
-  "paymentDate": null
+  "status": "PENDING"
 }
 ```
 
-### 7.2 Processar (simulação)
+### 6.3 Processar (admin)
 
-`POST /payments/{paymentId}/process` → status vai para `PROCESSING`.
+`POST /payments/{paymentId}/process` — **exige `ROLE_ADMIN`**.
 
-### 7.3 Aprovar
+Transição `PENDING` → `PROCESSING`.
 
-`POST /payments/{paymentId}/approve` → `APPROVED`.
+### 6.4 Aprovar (admin)
 
-### 7.4 Recusar
+`POST /payments/{paymentId}/approve` — **exige `ROLE_ADMIN`**.
 
-`POST /payments/{paymentId}/decline` → `DECLINED`.
+Transição `PROCESSING` → `APPROVED`.
 
-### 7.5 Estornar
+### 6.5 Recusar (admin)
 
-`POST /payments/{paymentId}/refund` → `REFUNDED`.
+`POST /payments/{paymentId}/decline` — **exige `ROLE_ADMIN`**.
 
-### 7.6 Buscar por pedido
+Transição `PROCESSING` → `DECLINED`.
+
+### 6.6 Estornar (admin)
+
+`POST /payments/{paymentId}/refund` — **exige `ROLE_ADMIN`**.
+
+Transição `APPROVED` → `REFUNDED`.
+
+### 6.7 Buscar por pedido (dono do pedido)
 
 `GET /payments/order/{orderId}`
 
-### 7.7 Listar por status
+### 6.8 Listar por status (usuário logado)
 
 `GET /payments/status/{status}` — ex.: `/payments/status/APPROVED`. Retorna **apenas os pagamentos do usuário logado** com aquele status.
 
-### 7.8 Atualizar status manualmente
+### 6.9 Atualizar status manualmente (admin)
 
-`PUT /payments/{paymentId}/status?status=PROCESSING`
+`PUT /payments/{paymentId}/status?status=PROCESSING` — **exige `ROLE_ADMIN`**.
+
+Sujeito às mesmas transições permitidas em 6.1.
 
 ---
 
-## 8. Endereços
+## 7. Endereços
 
-`/addresses` — protegido.
+`/addresses` — protegido; **só o dono** acessa.
 
-### 8.1 Adicionar endereço
+### 7.1 Adicionar endereço
 
-`POST /addresses/user/{userId}`
+`POST /addresses/user/{userId}` — ownership pelo `userId` do path.
 
 ```json
 {
@@ -392,49 +412,51 @@ Cada pedido só pode ter **um** pagamento. Chamar de novo para o mesmo `orderId`
 }
 ```
 
-### 8.2 Listar endereços do usuário
+Qualquer `user` que venha no corpo é ignorado — o dono do endereço é sempre o do path.
 
-`GET /addresses/user/{userId}`
+### 7.2 Listar endereços do usuário
 
-### 8.3 Deletar endereço
+`GET /addresses/user/{userId}` — ownership pelo `userId` do path.
 
-`DELETE /addresses/{addressId}`
+### 7.3 Deletar endereço
+
+`DELETE /addresses/{addressId}` — ownership verificado pelo dono do próprio endereço: **403** se o endereço pertencer a outro usuário; **404** se não existir.
 
 ---
 
-## 9. Telefones
+## 8. Telefones
 
-`/phones` — protegido.
+`/phones` — protegido; **só o dono** acessa.
 
-### 9.1 Adicionar telefone
+### 8.1 Adicionar telefone
 
 `POST /phones/user/{userId}?number=11999999999`
 
-O número vai como query param, **não** no corpo.
+O número vai como query param, **não** no corpo. Ownership pelo `userId` do path.
 
-### 9.2 Listar telefones do usuário
+### 8.2 Listar telefones do usuário
 
-`GET /phones/user/{userId}`
+`GET /phones/user/{userId}` — ownership pelo `userId` do path.
 
-### 9.3 Atualizar telefone
+### 8.3 Atualizar telefone
 
-`PUT /phones/{phoneId}?number=11988887777`
+`PUT /phones/{phoneId}?number=11988887777` — ownership pelo dono do próprio telefone.
 
-### 9.4 Deletar um telefone
+### 8.4 Deletar um telefone
 
-`DELETE /phones/{phoneId}`
+`DELETE /phones/{phoneId}` — ownership pelo dono do próprio telefone.
 
-### 9.5 Deletar todos os telefones do usuário
+### 8.5 Deletar todos os telefones do usuário
 
-`DELETE /phones/user/{userId}`
+`DELETE /phones/user/{userId}` — ownership pelo `userId` do path.
 
 ---
 
-## 10. Acessibilidade
+## 9. Acessibilidade
 
 `/api/accessibility` — misto.
 
-### 10.1 Idiomas suportados (público)
+### 9.1 Idiomas suportados (público)
 
 `GET /api/accessibility/languages`
 
@@ -452,7 +474,7 @@ O número vai como query param, **não** no corpo.
 }
 ```
 
-### 10.2 Ler configurações do usuário
+### 9.2 Ler configurações do usuário
 
 `GET /api/accessibility/users/{userId}/settings` — **só o dono**.
 
@@ -467,7 +489,7 @@ O número vai como query param, **não** no corpo.
 }
 ```
 
-### 10.3 Salvar configurações
+### 9.3 Salvar configurações
 
 `PUT /api/accessibility/users/{userId}/settings`
 
@@ -488,7 +510,7 @@ O número vai como query param, **não** no corpo.
 - `colorTheme`: `default | high-contrast | dark`
 - `profiles`: qualquer combinação dos valores do enum `AccessibilityProfile`
 
-### 10.4 Produto adaptado ao usuário
+### 9.4 Produto adaptado ao usuário
 
 `GET /api/accessibility/products/{productId}`
 
@@ -513,9 +535,11 @@ Retorna o produto **traduzido para o idioma preferido do usuário logado**, com 
 }
 ```
 
+A tradução usa a API pública **LibreTranslate** (`translate.terraprint.co`) e os nomes das cores vêm da **TheColorAPI** (`thecolorapi.com`). Chamadas externas têm timeout curto; se qualquer uma falhar, o campo correspondente cai para o valor original em pt-BR.
+
 ---
 
-## 11. Enums
+## 10. Enums
 
 ### `AccessibilityProfile`
 
@@ -547,6 +571,8 @@ Retorna o produto **traduzido para o idioma preferido do usuário logado**, com 
 - `REFUNDED`
 - `CANCELLED`
 
+Transições permitidas na seção 6.1.
+
 ### Métodos de pagamento (query param `method`)
 
 - `CREDIT_CARD`
@@ -556,20 +582,30 @@ Retorna o produto **traduzido para o idioma preferido do usuário logado**, com 
 
 ---
 
-## 12. Códigos HTTP e erros
+## 11. Códigos HTTP e erros
 
 | Código | Uso |
 |:-------|:----|
-| 200 | Sucesso em GET/PUT/PATCH |
-| 201 | Criado (POST) |
-| 204 | Sucesso sem corpo (DELETE) |
-| 400 | Payload malformado, parâmetro inválido ou regra de negócio violada (estoque insuficiente, pagamento duplicado, pedido já cancelado etc.) |
+| 200 | Sucesso em GET/PUT/PATCH e DELETE (corpo vazio) |
+| 201 | Criado (POST em `/api/auth/register`) |
+| 400 | Payload malformado, parâmetro inválido ou regra de negócio violada (estoque insuficiente, pagamento duplicado, transição inválida, pedido já cancelado etc.) |
 | 401 | Token ausente, inválido ou expirado |
 | 403 | Autenticado, mas sem permissão (ownership check ou papel `ROLE_ADMIN` ausente) |
 | 404 | Recurso não encontrado |
-| 409 | Conflito (ex.: email já usado no cadastro) |
+| 409 | Conflito (ex.: email já usado no cadastro, violação de constraint de unicidade) |
 | 422 | Erro de validação — em campos do payload (`@Valid`) ou em parâmetros de path/query anotados |
 | 500 | Erro inesperado do servidor |
+
+**Formato-padrão do corpo de erro:**
+
+```json
+{
+  "timestamp": "2026-07-12T12:00:00",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Produto não encontrado: 999"
+}
+```
 
 **Corpo do 422** — traz o mapa `fields` com o campo (ou parâmetro) e a respectiva mensagem:
 
@@ -582,17 +618,5 @@ Retorna o produto **traduzido para o idioma preferido do usuário logado**, com 
   "fields": {
     "getUserByEmail.email": "Email inválido"
   }
-}
-```
-
-**Formato do corpo de erro:**
-
-```json
-{
-  "timestamp": "2026-07-12T12:00:00",
-  "status": 404,
-  "error": "Not Found",
-  "message": "Produto com ID 999 não encontrado.",
-  "path": "/products/999"
 }
 ```

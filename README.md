@@ -16,6 +16,8 @@ API RESTful em Java + Spring Boot para uma loja de Funko Pops, com foco em acess
 - [Rodando](#rodando)
 - [Endpoints](#endpoints)
 - [Estrutura](#estrutura)
+- [Integrantes](#integrantes)
+- [Uso de IA](#uso-de-ia)
 
 ## Stack
 
@@ -73,7 +75,7 @@ JWT_EXPIRATION=86400000
 ./mvnw spring-boot:run
 ```
 
-A aplicação sobe em `http://localhost:8080`. Flyway aplica as migrations de `src/main/resources/db/migrations/` automaticamente.
+A aplicação sobe em `http://localhost:8080`. O Flyway aplica as migrations de `src/main/resources/db/migrations/` automaticamente na primeira execução (V001 → V005).
 
 ## Endpoints
 
@@ -88,7 +90,7 @@ Resumo:
 | Produtos | `/products` | Leitura: qualquer autenticado. Escrita: `ROLE_ADMIN` |
 | Carrinho | `/cart` | Dono do recurso |
 | Pedidos | `/orders` | Dono do recurso; mudança de status só `ROLE_ADMIN` |
-| Pagamentos | `/payments` | Dono do pedido associado |
+| Pagamentos | `/payments` | Dono do pedido para leitura/criação; mudanças de status só `ROLE_ADMIN` |
 | Endereços | `/addresses` | Dono do recurso |
 | Telefones | `/phones` | Dono do recurso |
 | Acessibilidade | `/api/accessibility` | `/languages` público; resto exige dono |
@@ -102,8 +104,9 @@ Authorization: Bearer <token>
 **Regras de autorização:**
 
 - Endpoints com `{userId}` no path validam ownership contra o token: só o dono acessa. Caso contrário → **403 Forbidden**.
-- Endpoints com `{orderId}` / `{paymentId}` validam ownership pelo dono do pedido associado.
-- Operações administrativas (criar/editar/excluir produtos, alterar status de pedido, listar todos os usuários) exigem `ROLE_ADMIN`. Novos usuários são criados com `ROLE_USER`; para promover, atualize `users.role` no banco.
+- Endpoints com `{orderId}` / `{paymentId}` / `{addressId}` / `{phoneId}` validam ownership pelo dono do recurso associado.
+- Operações administrativas exigem `ROLE_ADMIN`: criar/editar/excluir produtos, alterar status de pedido, transitar status de pagamento (approve/decline/process/refund), listar todos os usuários. Novos usuários são criados com `ROLE_USER`; para promover, atualize `users.role` no banco.
+- `password` e `role` são `@JsonIgnore` na entidade `User` — não vazam nas respostas mesmo quando o `User` vem embutido em `Order`, `Payment` etc.
 - Token inválido ou expirado → **401** em JSON com o mesmo formato dos demais erros.
 
 ## Estrutura
@@ -124,5 +127,33 @@ src/main/java/com/acessibiliadade/pop/
 
 src/main/resources/
 ├── application.properties
-└── db/migrations/   # Flyway (V001, V002, V003...)
+└── db/migrations/   # Flyway (V001–V005)
 ```
+
+## Integrantes
+
+<!-- Preencher antes da entrega. Rubrica §8.9 exige "integrantes com função". -->
+
+| Nome | Função | GitHub |
+|:-----|:-------|:-------|
+| _preencher_ | Backend | @dvarakaki |
+| _preencher_ | Frontend | @_preencher_ |
+| _preencher_ | _preencher_ | @_preencher_ |
+
+## Uso de IA
+
+Este backend foi desenvolvido com apoio de **Claude (Anthropic, modelo Opus 5)**, usado como par de programação para revisão de código, refatoração e documentação. Todo código foi lido, ajustado e commitado pelo autor — nada foi copiado sem revisão.
+
+**Onde a IA foi usada:**
+
+- **Revisão de segurança** que identificou os bloqueadores das migrations (falha silenciosa do Flyway por causa do underscore único nos nomes) e as colunas `users.role` e `product.version` faltantes.
+- **Refatoração da camada de segurança**: `@JsonIgnore` em `User.password`/`role`, ownership em `AddressController`/`PhoneController`, remoção do `/cart-items` (que era duplicata insegura de `/cart`), `@PreAuthorize("hasRole('ADMIN')")` nas mutações de pagamento.
+- **Máquina de estados de pagamento** (`PaymentService.ALLOWED_TRANSITIONS`).
+- **Padronização** dos services legados (`AddressService`, `PhoneService`) para o padrão do restante do projeto (`@RequiredArgsConstructor`, `ResourceNotFoundException`).
+- **Documentação**: revisão de `docs/docs.md` e atualização deste README.
+
+**O que não foi feito por IA:** modelagem de dados original (users/orders/products/etc.), decisões de escopo, escolha de stack, integração com PostgreSQL Aiven, e a estrutura inicial do projeto — anteriores a esta rodada de revisão.
+
+Detalhamento por arquivo em [`docs/uso-de-ia.md`](docs/uso-de-ia.md).
+
+Cada integrante responde pelo código que aparece na arguição, independentemente da origem — em linha com a política do edital §10.1.
