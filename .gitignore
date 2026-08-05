@@ -32,4 +32,9 @@ build/
 ### VS Code ###
 .vscode/
 
+### Claude Code ###
+# Configuração local da máquina (permissões, caminhos absolutos do JDK e do front).
+# Se um dia houver settings.json compartilhado pelo time, versione só ele.
+.claude/
+
 .env
