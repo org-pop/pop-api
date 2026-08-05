@@ -1,8 +1,9 @@
 package com.acessibiliadade.pop.controller;
 
 import com.acessibiliadade.pop.model.Address;
+import com.acessibiliadade.pop.security.AuthorizationService;
 import com.acessibiliadade.pop.service.AddressService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,23 +11,27 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/addresses")
+@RequiredArgsConstructor
 public class AddressController {
 
-    @Autowired
-    private AddressService addressService;
+    private final AddressService addressService;
+    private final AuthorizationService authorizationService;
 
     @PostMapping("/user/{userId}")
     public Address createAddress(@PathVariable UUID userId, @RequestBody Address address) {
+        authorizationService.assertOwnership(userId);
         return addressService.createAddress(userId, address);
     }
 
     @GetMapping("/user/{userId}")
     public List<Address> getAddressesByUser(@PathVariable UUID userId) {
+        authorizationService.assertOwnership(userId);
         return addressService.getAddressesByUserId(userId);
     }
 
     @DeleteMapping("/{addressId}")
     public void deleteAddress(@PathVariable Long addressId) {
-        addressService.deleteAddress(addressId);
+        UUID caller = authorizationService.currentUser().getId();
+        addressService.deleteAddress(addressId, caller);
     }
 }

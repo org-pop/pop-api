@@ -1,5 +1,6 @@
 package com.acessibiliadade.pop.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,6 +31,9 @@ public class User {
     @Column(name = "email", nullable = false, unique = true, length = 255)
     private String email;
 
+    // Nunca serializar o hash bcrypt: vários endpoints retornam Order/Payment/etc.
+    // com o User associado, e sem isso o hash apareceria na resposta.
+    @JsonIgnore
     @Column(name = "password", nullable = false, length = 255)
     private String password;
 
@@ -41,6 +45,8 @@ public class User {
     @ColumnDefault("0.0")
     private BigDecimal accountBalance = BigDecimal.ZERO;
 
+    // Detalhe de autorização — não vaza junto com o User em respostas de outros recursos.
+    @JsonIgnore
     @Column(name = "role", nullable = false, length = 20)
     @ColumnDefault("'ROLE_USER'")
     private String role = "ROLE_USER";

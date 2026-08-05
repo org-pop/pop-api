@@ -1,7 +1,10 @@
 package com.acessibiliadade.pop.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+
 import com.acessibiliadade.pop.enums.PaymentStatus;
 import com.acessibiliadade.pop.exception.BusinessException;
 import com.acessibiliadade.pop.exception.ResourceNotFoundException;
@@ -15,13 +18,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
+
+    // Máquina de estados. Sem isso updatePaymentStatus aceitava qualquer coisa —
+    // REFUNDED->APPROVED, DECLINED->APPROVED — e o próprio dono do pedido driblava
+    // o fluxo. Terminais (DECLINED, REFUNDED, CANCELLED) não têm saída.
+    private static final Map<PaymentStatus, Set<PaymentStatus>> ALLOWED_TRANSITIONS = Map.of(
+            PaymentStatus.PENDING,    Set.of(PaymentStatus.PROCESSING, PaymentStatus.CANCELLED),
+            PaymentStatus.PROCESSING, Set.of(PaymentStatus.APPROVED, PaymentStatus.DECLINED),
+            PaymentStatus.APPROVED,   Set.of(PaymentStatus.REFUNDED),
+            PaymentStatus.DECLINED,   Set.of(),
+            PaymentStatus.REFUNDED,   Set.of(),
+            PaymentStatus.CANCELLED,  Set.of()
+    );
 
     @Transactional
     public Payment createPayment(Long orderId, String method) {
@@ -44,59 +58,32 @@ public class PaymentService {
 
     @Transactional
     public Payment processPayment(Long paymentId) {
-        Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Pagamento não encontrado: " + paymentId));
+        return transitionTo(paymentId, PaymentStatus.PROCESSING);
+    }
 
-        // Simular processamento (aqui viria integração real com gateway)
-        // Por simulação, vamos aprovar
-        payment.setStatus(PaymentStatus.APPROVED);
+    @Transactional
+    public Payment approvePayment(Long paymentId) {
+        return transitionTo(paymentId, PaymentStatus.APPROVED);
+    }
 
-        return paymentRepository.save(payment);
+    @Transactional
+    public Payment declinePayment(Long paymentId) {
+        return transitionTo(paymentId, PaymentStatus.DECLINED);
+    }
+
+    @Transactional
+    public Payment refundPayment(Long paymentId) {
+        return transitionTo(paymentId, PaymentStatus.REFUNDED);
+    }
+
+    @Transactional
+    public Payment updatePaymentStatus(Long paymentId, PaymentStatus status) {
+        return transitionTo(paymentId, status);
     }
 
     public Payment getPaymentByOrder(Long orderId) {
         return paymentRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Pagamento não encontrado para o pedido: " + orderId));
-    }
-
-    @Transactional
-    public Payment updatePaymentStatus(Long paymentId, PaymentStatus status) {
-        Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Pagamento não encontrado: " + paymentId));
-
-        payment.setStatus(status);
-        return paymentRepository.save(payment);
-    }
-
-    @Transactional
-    public Payment approvePayment(Long paymentId) {
-        Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Pagamento não encontrado: " + paymentId));
-
-        payment.setStatus(PaymentStatus.APPROVED);
-        return paymentRepository.save(payment);
-    }
-
-    @Transactional
-    public Payment declinePayment(Long paymentId) {
-        Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Pagamento não encontrado: " + paymentId));
-
-        payment.setStatus(PaymentStatus.DECLINED);
-        return paymentRepository.save(payment);
-    }
-
-    @Transactional
-    public Payment refundPayment(Long paymentId) {
-        Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Pagamento não encontrado: " + paymentId));
-
-        if (payment.getStatus() != PaymentStatus.APPROVED) {
-            throw new BusinessException("Apenas pagamentos aprovados podem ser estornados");
-        }
-
-        payment.setStatus(PaymentStatus.REFUNDED);
-        return paymentRepository.save(payment);
     }
 
     public List<Payment> getPaymentsByStatus(PaymentStatus status, UUID userId) {
@@ -113,5 +100,22 @@ public class PaymentService {
         if (order == null || order.getUser() == null || !userId.equals(order.getUser().getId())) {
             throw new AccessDeniedException("Você não tem permissão para acessar este pagamento");
         }
+    }
+
+    private Payment transitionTo(Long paymentId, PaymentStatus target) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Pagamento não encontrado: " + paymentId));
+
+        PaymentStatus current = payment.getStatus();
+        if (current == target) {
+            throw new BusinessException("Pagamento já está no status " + target);
+        }
+        Set<PaymentStatus> allowed = ALLOWED_TRANSITIONS.getOrDefault(current, Set.of());
+        if (!allowed.contains(target)) {
+            throw new BusinessException("Transição de pagamento inválida: " + current + " -> " + target);
+        }
+
+        payment.setStatus(target);
+        return paymentRepository.save(payment);
     }
 }
