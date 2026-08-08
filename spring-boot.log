@@ -180,3 +180,499 @@ Arquivo .env carregado com sucesso!
 2026-08-08T10:40:56.919-03:00  INFO 37368 --- [pop] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
 2026-08-08T10:40:56.920-03:00  INFO 37368 --- [pop] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
 2026-08-08T10:40:56.921-03:00  INFO 37368 --- [pop] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-08-08T11:27:45.074-03:00  WARN 37368 --- [pop] [l-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=5m3s72ms782µs600ns).
+2026-08-08T11:54:27.280-03:00  INFO 37368 --- [pop] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 10 class path changes (0 additions, 10 deletions, 0 modifications)
+2026-08-08T11:54:27.486-03:00  INFO 37368 --- [pop] [       Thread-5] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2026-08-08T11:54:28.124-03:00  INFO 37368 --- [pop] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2026-08-08T11:54:28.212-03:00  INFO 37368 --- [pop] [       Thread-5] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-08-08T11:54:28.415-03:00  INFO 37368 --- [pop] [       Thread-5] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-08-08T11:54:38.466-03:00  WARN 37368 --- [pop] [       Thread-5] com.zaxxer.hikari.pool.HikariPool        : Timed-out waiting for close connection executor to shutdown
+2026-08-08T11:54:38.468-03:00  INFO 37368 --- [pop] [       Thread-5] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.1)
+
+Carregado: CLASSWORLDS_LAUNCHER
+Carregado: CLAUDE_CODE_SDK_HAS_OAUTH_REFRESH
+Carregado: GIT_EDITOR
+Carregado: CLAUDE_CODE_HOST_SESSION_ID
+Carregado: PROCESSOR_IDENTIFIER
+Carregado: PSExecutionPolicyPreference
+Carregado: __MVNW_CMD__
+Carregado: USERDNSDOMAIN
+Carregado: ProgramFiles
+Carregado: EXEC_DIR
+Carregado: NO_COLOR
+Carregado: TMP
+Carregado: USERNAME
+Carregado: CHROME_CRASHPAD_PIPE_NAME
+Carregado: LOCALAPPDATA
+Carregado: MAVEN_PROJECTBASEDIR
+Carregado: TEMP
+Carregado: PROCESSOR_ARCHITECTURE
+Carregado: CommonProgramFiles(x86)
+Carregado: CLAUDE_CODE_REPORT_FINDINGS
+Carregado: PROCESSOR_REVISION
+Carregado: DISABLE_AUTOUPDATER
+Carregado: NoDefaultCurrentDirectoryInExePath
+Carregado: CLAUDE_PREVIEW_CLASSIFIER_FLOOR
+Carregado: DB_PASSWORD
+Carregado: DriverData
+Carregado: COMPUTERNAME
+Carregado: PSModulePath
+Carregado: SPRING_PROFILES_ACTIVE
+Carregado: ComSpec
+Carregado: USERPROFILE
+Carregado: SENTRY-TRACE
+Carregado: PATHEXT
+Carregado: windir
+Carregado: PYTHONIOENCODING
+Carregado: DB_NAME
+Carregado: jvmConfig
+Carregado: PROCESSOR_LEVEL
+Carregado: AI_AGENT
+Carregado: OS
+Carregado: =ExitCode
+Carregado: DB_HOST
+Carregado: NUMBER_OF_PROCESSORS
+Carregado: DB_URL
+Carregado: CLAUDE_CODE_CHILD_SESSION
+Carregado: CLAUDE_CODE_ENTRYPOINT
+Carregado: ProgramData
+Carregado: PUBLIC
+Carregado: CLAUDE_CODE_SDK_HAS_HOST_AUTH_REFRESH
+Carregado: SystemRoot
+Carregado: NODE_USE_SYSTEM_CA
+Carregado: OneDrive
+Carregado: PROMPT
+Carregado: APPDATA
+Carregado: MCP_CONNECTION_NONBLOCKING
+Carregado: PATH
+Carregado: BAGGAGE
+Carregado: CLAUDE_CODE_ENABLE_ASK_USER_QUESTION_TOOL
+Carregado: CLAUDE_AGENT_SDK_VERSION
+Carregado: __COMPAT_LAYER
+Carregado: ANTHROPIC_BASE_URL
+Carregado: GIT_TERMINAL_PROMPT
+Carregado: CLASSWORLDS_JAR
+Carregado: CLAUDECODE
+Carregado: DB_USERNAME
+Carregado: CLAUDE_CODE_DISABLE_CRON
+Carregado: SystemDrive
+Carregado: API_TIMEOUT_MS
+Carregado: MAVEN_HOME
+Carregado: INTERNAL_MAVEN_OPTS
+Carregado: =C:
+Carregado: CLAUDE_CODE_EMIT_TOOL_USE_SUMMARIES
+Carregado: HOMEPATH
+Carregado: DB_PORT
+Carregado: CLAUDE_CODE_SESSION_ID
+Carregado: CLAUDE_CODE_EAGER_FLUSH
+Carregado: USE_STAGING_OAUTH
+Carregado: JWT_SECRET
+Carregado: HOMEDRIVE
+Carregado: USERDOMAIN
+Carregado: CommonProgramFiles
+Carregado: ProgramW6432
+Carregado: JWT_EXPIRATION
+Carregado: ERROR_CODE
+Carregado: USE_LOCAL_OAUTH
+Carregado: CLAUDE_PID
+Carregado: CLAUDE_CODE_OAUTH_SCOPES
+Carregado: COREPACK_ENABLE_AUTO_PIN
+Carregado: LOGONSERVER
+Carregado: JAVACMD
+Carregado: WDIR
+Carregado: DISABLE_MICROCOMPACT
+Carregado: ALLUSERSPROFILE
+Carregado: GCM_INTERACTIVE
+Carregado: USERDOMAIN_ROAMINGPROFILE
+Carregado: GIT_ASKPASS
+Carregado: ProgramFiles(x86)
+Carregado: MAVEN_CMD_LINE_ARGS
+Carregado: CommonProgramW6432
+Carregado: ZES_ENABLE_SYSMAN
+Arquivo .env carregado com sucesso!
+2026-08-08T11:54:39.646-03:00  INFO 37368 --- [pop] [  restartedMain] com.acessibiliadade.pop.PopApplication   : Starting PopApplication using Java 19.0.2 with PID 37368 (C:\Users\davisouza-ieg\IdeaProjects\pop-api\target\classes started by davisouza-ieg in C:\Users\davisouza-ieg\IdeaProjects\pop-api)
+2026-08-08T11:54:39.647-03:00  INFO 37368 --- [pop] [  restartedMain] com.acessibiliadade.pop.PopApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-08-08T11:54:40.279-03:00  INFO 37368 --- [pop] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-08-08T11:54:40.378-03:00  INFO 37368 --- [pop] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 94 ms. Found 10 JPA repository interfaces.
+2026-08-08T11:54:40.806-03:00  INFO 37368 --- [pop] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-08-08T11:54:40.814-03:00  INFO 37368 --- [pop] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-08-08T11:54:40.817-03:00  INFO 37368 --- [pop] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.34]
+2026-08-08T11:54:40.887-03:00  INFO 37368 --- [pop] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-08-08T11:54:40.888-03:00  INFO 37368 --- [pop] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1236 ms
+2026-08-08T11:54:41.157-03:00  INFO 37368 --- [pop] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-08-08T11:54:43.637-03:00  INFO 37368 --- [pop] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@7144487f
+2026-08-08T11:54:43.638-03:00  INFO 37368 --- [pop] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-08-08T11:54:43.844-03:00  INFO 37368 --- [pop] [  restartedMain] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://pg-6a391de-eduardocpolicarpo-af75.e.aivencloud.com:15725/pop?sslmode=require (PostgreSQL 16.14)
+2026-08-08T11:54:46.525-03:00  INFO 37368 --- [pop] [  restartedMain] o.f.c.i.s.JdbcTableSchemaHistory         : Repair of failed migration in Schema History table "public"."flyway_schema_history" not necessary. No failed migration detected.
+2026-08-08T11:54:47.426-03:00  INFO 37368 --- [pop] [  restartedMain] o.f.core.internal.command.DbRepair       : Successfully repaired schema history table "public"."flyway_schema_history" (execution time 00:01.921s).
+2026-08-08T11:54:52.504-03:00  INFO 37368 --- [pop] [  restartedMain] o.f.core.internal.command.DbValidate     : Successfully validated 10 migrations (execution time 00:00.853s)
+2026-08-08T11:54:55.234-03:00  INFO 37368 --- [pop] [  restartedMain] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 009
+2026-08-08T11:54:55.439-03:00  INFO 37368 --- [pop] [  restartedMain] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+2026-08-08T11:54:56.806-03:00  INFO 37368 --- [pop] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-08-08T11:54:56.818-03:00  INFO 37368 --- [pop] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-08-08T11:54:56.855-03:00  INFO 37368 --- [pop] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-08-08T11:54:57.075-03:00  WARN 37368 --- [pop] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-08-08T11:54:57.488-03:00  INFO 37368 --- [pop] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-2)']
+	Database driver: undefined/unknown
+	Database version: 16.14
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-08-08T11:54:57.955-03:00  INFO 37368 --- [pop] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-08-08T11:54:57.958-03:00  INFO 37368 --- [pop] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-08-08T11:54:58.416-03:00  INFO 37368 --- [pop] [  restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userService
+2026-08-08T11:54:58.707-03:00  WARN 37368 --- [pop] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-08-08T11:54:59.302-03:00  INFO 37368 --- [pop] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-08-08T11:54:59.329-03:00  INFO 37368 --- [pop] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-08-08T11:54:59.341-03:00  INFO 37368 --- [pop] [  restartedMain] com.acessibiliadade.pop.PopApplication   : Started PopApplication in 20.018 seconds (process running for 4496.493)
+2026-08-08T11:54:59.345-03:00  INFO 37368 --- [pop] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-08-08T11:55:00.783-03:00  INFO 37368 --- [pop] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 12 class path changes (10 additions, 0 deletions, 2 modifications)
+2026-08-08T11:55:00.785-03:00  INFO 37368 --- [pop] [       Thread-7] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2026-08-08T11:55:01.341-03:00  INFO 37368 --- [pop] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2026-08-08T11:55:01.346-03:00  INFO 37368 --- [pop] [       Thread-7] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-08-08T11:55:01.347-03:00  INFO 37368 --- [pop] [       Thread-7] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown initiated...
+2026-08-08T11:55:03.265-03:00  INFO 37368 --- [pop] [       Thread-7] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.1)
+
+Carregado: DB_NAME
+Carregado: CLAUDE_CODE_ENABLE_ASK_USER_QUESTION_TOOL
+Carregado: GCM_INTERACTIVE
+Carregado: CLAUDE_CODE_CHILD_SESSION
+Carregado: =C:
+Carregado: LOCALAPPDATA
+Carregado: __COMPAT_LAYER
+Carregado: SPRING_PROFILES_ACTIVE
+Carregado: USE_STAGING_OAUTH
+Carregado: GIT_TERMINAL_PROMPT
+Carregado: SystemRoot
+Carregado: CLAUDE_CODE_SDK_HAS_HOST_AUTH_REFRESH
+Carregado: __MVNW_CMD__
+Carregado: CLAUDE_CODE_HOST_SESSION_ID
+Carregado: PROCESSOR_ARCHITECTURE
+Carregado: PROCESSOR_IDENTIFIER
+Carregado: ProgramData
+Carregado: USERNAME
+Carregado: COMPUTERNAME
+Carregado: CLAUDE_PID
+Carregado: ProgramFiles
+Carregado: MAVEN_PROJECTBASEDIR
+Carregado: TEMP
+Carregado: USE_LOCAL_OAUTH
+Carregado: DB_USERNAME
+Carregado: DriverData
+Carregado: CommonProgramFiles(x86)
+Carregado: USERDNSDOMAIN
+Carregado: PROMPT
+Carregado: NoDefaultCurrentDirectoryInExePath
+Carregado: ProgramW6432
+Carregado: DB_HOST
+Carregado: JAVACMD
+Carregado: CLAUDE_CODE_EMIT_TOOL_USE_SUMMARIES
+Carregado: ProgramFiles(x86)
+Carregado: HOMEPATH
+Carregado: INTERNAL_MAVEN_OPTS
+Carregado: CLAUDE_CODE_ENTRYPOINT
+Carregado: CLASSWORLDS_JAR
+Carregado: ComSpec
+Carregado: CHROME_CRASHPAD_PIPE_NAME
+Carregado: SystemDrive
+Carregado: CLAUDE_CODE_OAUTH_SCOPES
+Carregado: COREPACK_ENABLE_AUTO_PIN
+Carregado: USERDOMAIN_ROAMINGPROFILE
+Carregado: USERPROFILE
+Carregado: DB_URL
+Carregado: CLAUDE_CODE_DISABLE_CRON
+Carregado: CLAUDE_CODE_REPORT_FINDINGS
+Carregado: WDIR
+Carregado: JWT_SECRET
+Carregado: CommonProgramW6432
+Carregado: OS
+Carregado: DB_PORT
+Carregado: CLAUDECODE
+Carregado: PUBLIC
+Carregado: BAGGAGE
+Carregado: =ExitCode
+Carregado: OneDrive
+Carregado: LOGONSERVER
+Carregado: CLAUDE_AGENT_SDK_VERSION
+Carregado: ALLUSERSPROFILE
+Carregado: MCP_CONNECTION_NONBLOCKING
+Carregado: PATHEXT
+Carregado: NO_COLOR
+Carregado: PSExecutionPolicyPreference
+Carregado: TMP
+Carregado: CLAUDE_CODE_SESSION_ID
+Carregado: CLAUDE_CODE_EAGER_FLUSH
+Carregado: JWT_EXPIRATION
+Carregado: CLASSWORLDS_LAUNCHER
+Carregado: ANTHROPIC_BASE_URL
+Carregado: PYTHONIOENCODING
+Carregado: USERDOMAIN
+Carregado: jvmConfig
+Carregado: API_TIMEOUT_MS
+Carregado: ERROR_CODE
+Carregado: GIT_EDITOR
+Carregado: NUMBER_OF_PROCESSORS
+Carregado: PROCESSOR_REVISION
+Carregado: CLAUDE_PREVIEW_CLASSIFIER_FLOOR
+Carregado: DISABLE_MICROCOMPACT
+Carregado: MAVEN_CMD_LINE_ARGS
+Carregado: PROCESSOR_LEVEL
+Carregado: CLAUDE_CODE_SDK_HAS_OAUTH_REFRESH
+Carregado: windir
+Carregado: HOMEDRIVE
+Carregado: PSModulePath
+Carregado: DISABLE_AUTOUPDATER
+Carregado: SENTRY-TRACE
+Carregado: DB_PASSWORD
+Carregado: ZES_ENABLE_SYSMAN
+Carregado: MAVEN_HOME
+Carregado: PATH
+Carregado: AI_AGENT
+Carregado: EXEC_DIR
+Carregado: GIT_ASKPASS
+Carregado: NODE_USE_SYSTEM_CA
+Carregado: CommonProgramFiles
+Carregado: APPDATA
+Arquivo .env carregado com sucesso!
+2026-08-08T11:55:03.420-03:00  INFO 37368 --- [pop] [  restartedMain] com.acessibiliadade.pop.PopApplication   : Starting PopApplication using Java 19.0.2 with PID 37368 (C:\Users\davisouza-ieg\IdeaProjects\pop-api\target\classes started by davisouza-ieg in C:\Users\davisouza-ieg\IdeaProjects\pop-api)
+2026-08-08T11:55:03.420-03:00  INFO 37368 --- [pop] [  restartedMain] com.acessibiliadade.pop.PopApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-08-08T11:55:03.763-03:00  INFO 37368 --- [pop] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-08-08T11:55:03.837-03:00  INFO 37368 --- [pop] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 71 ms. Found 10 JPA repository interfaces.
+2026-08-08T11:55:04.059-03:00  INFO 37368 --- [pop] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-08-08T11:55:04.102-03:00  INFO 37368 --- [pop] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-08-08T11:55:04.103-03:00  INFO 37368 --- [pop] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.34]
+2026-08-08T11:55:04.144-03:00  INFO 37368 --- [pop] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-08-08T11:55:04.146-03:00  INFO 37368 --- [pop] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 723 ms
+2026-08-08T11:55:04.256-03:00  INFO 37368 --- [pop] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Starting...
+2026-08-08T11:55:05.793-03:00  INFO 37368 --- [pop] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-3 - Added connection org.postgresql.jdbc.PgConnection@25f8ae6e
+2026-08-08T11:55:05.802-03:00  INFO 37368 --- [pop] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Start completed.
+2026-08-08T11:55:06.014-03:00  INFO 37368 --- [pop] [  restartedMain] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://pg-6a391de-eduardocpolicarpo-af75.e.aivencloud.com:15725/pop?sslmode=require (PostgreSQL 16.14)
+2026-08-08T11:55:09.497-03:00  INFO 37368 --- [pop] [  restartedMain] o.f.c.i.s.JdbcTableSchemaHistory         : Repair of failed migration in Schema History table "public"."flyway_schema_history" not necessary. No failed migration detected.
+2026-08-08T11:55:10.361-03:00  INFO 37368 --- [pop] [  restartedMain] o.f.core.internal.command.DbRepair       : Successfully repaired schema history table "public"."flyway_schema_history" (execution time 00:02.332s).
+2026-08-08T11:55:16.082-03:00  INFO 37368 --- [pop] [  restartedMain] o.f.core.internal.command.DbValidate     : Successfully validated 10 migrations (execution time 00:00.849s)
+2026-08-08T11:55:18.789-03:00  INFO 37368 --- [pop] [  restartedMain] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 009
+2026-08-08T11:55:19.001-03:00  INFO 37368 --- [pop] [  restartedMain] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+2026-08-08T11:55:20.869-03:00  INFO 37368 --- [pop] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-08-08T11:55:20.876-03:00  INFO 37368 --- [pop] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-08-08T11:55:20.888-03:00  INFO 37368 --- [pop] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-08-08T11:55:21.281-03:00  WARN 37368 --- [pop] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-08-08T11:55:21.712-03:00  INFO 37368 --- [pop] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-3)']
+	Database driver: undefined/unknown
+	Database version: 16.14
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-08-08T11:55:22.037-03:00  INFO 37368 --- [pop] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-08-08T11:55:22.037-03:00  INFO 37368 --- [pop] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-08-08T11:55:22.350-03:00  INFO 37368 --- [pop] [  restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userService
+2026-08-08T11:55:22.654-03:00  WARN 37368 --- [pop] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-08-08T11:55:23.114-03:00  INFO 37368 --- [pop] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-08-08T11:55:23.147-03:00  WARN 37368 --- [pop] [  restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-08-08T11:55:23.147-03:00  INFO 37368 --- [pop] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-08-08T11:55:23.147-03:00  INFO 37368 --- [pop] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown initiated...
+2026-08-08T11:55:24.610-03:00  INFO 37368 --- [pop] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown completed.
+2026-08-08T11:55:24.627-03:00  INFO 37368 --- [pop] [  restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-08-08T11:55:24.690-03:00 ERROR 37368 --- [pop] [  restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.1)
+
+Carregado: DB_URL
+Carregado: SystemDrive
+Carregado: DB_PASSWORD
+Carregado: USERNAME
+Carregado: TEMP
+Carregado: ANTHROPIC_BASE_URL
+Carregado: MAVEN_PROJECTBASEDIR
+Carregado: ComSpec
+Carregado: GIT_ASKPASS
+Carregado: COMPUTERNAME
+Carregado: LOCALAPPDATA
+Carregado: SPRING_PROFILES_ACTIVE
+Carregado: OS
+Carregado: CLAUDE_CODE_EAGER_FLUSH
+Carregado: NO_COLOR
+Carregado: ERROR_CODE
+Carregado: CLAUDE_AGENT_SDK_VERSION
+Carregado: PSExecutionPolicyPreference
+Carregado: CommonProgramFiles
+Carregado: APPDATA
+Carregado: DISABLE_MICROCOMPACT
+Carregado: USE_STAGING_OAUTH
+Carregado: CLAUDE_CODE_SDK_HAS_HOST_AUTH_REFRESH
+Carregado: SystemRoot
+Carregado: USERPROFILE
+Carregado: COREPACK_ENABLE_AUTO_PIN
+Carregado: MAVEN_HOME
+Carregado: NUMBER_OF_PROCESSORS
+Carregado: DISABLE_AUTOUPDATER
+Carregado: CLAUDE_CODE_SESSION_ID
+Carregado: CLASSWORLDS_JAR
+Carregado: OneDrive
+Carregado: PUBLIC
+Carregado: windir
+Carregado: USERDOMAIN_ROAMINGPROFILE
+Carregado: ProgramFiles
+Carregado: PATH
+Carregado: ProgramFiles(x86)
+Carregado: HOMEPATH
+Carregado: CLAUDE_CODE_SDK_HAS_OAUTH_REFRESH
+Carregado: CLAUDE_CODE_HOST_SESSION_ID
+Carregado: jvmConfig
+Carregado: CLAUDECODE
+Carregado: USERDNSDOMAIN
+Carregado: WDIR
+Carregado: DB_NAME
+Carregado: JWT_EXPIRATION
+Carregado: GIT_TERMINAL_PROMPT
+Carregado: USE_LOCAL_OAUTH
+Carregado: TMP
+Carregado: NODE_USE_SYSTEM_CA
+Carregado: MCP_CONNECTION_NONBLOCKING
+Carregado: __MVNW_CMD__
+Carregado: CLAUDE_CODE_ENABLE_ASK_USER_QUESTION_TOOL
+Carregado: CHROME_CRASHPAD_PIPE_NAME
+Carregado: JAVACMD
+Carregado: __COMPAT_LAYER
+Carregado: PSModulePath
+Carregado: BAGGAGE
+Carregado: CLAUDE_CODE_ENTRYPOINT
+Carregado: PROCESSOR_LEVEL
+Carregado: USERDOMAIN
+Carregado: HOMEDRIVE
+Carregado: ProgramData
+Carregado: SENTRY-TRACE
+Carregado: NoDefaultCurrentDirectoryInExePath
+Carregado: DB_PORT
+Carregado: DB_USERNAME
+Carregado: CLAUDE_CODE_EMIT_TOOL_USE_SUMMARIES
+Carregado: CLASSWORLDS_LAUNCHER
+Carregado: ZES_ENABLE_SYSMAN
+Carregado: CLAUDE_CODE_DISABLE_CRON
+Carregado: PATHEXT
+Carregado: PROCESSOR_ARCHITECTURE
+Carregado: JWT_SECRET
+Carregado: API_TIMEOUT_MS
+Carregado: DB_HOST
+Carregado: PROCESSOR_IDENTIFIER
+Carregado: ProgramW6432
+Carregado: PROCESSOR_REVISION
+Carregado: MAVEN_CMD_LINE_ARGS
+Carregado: DriverData
+Carregado: CommonProgramFiles(x86)
+Carregado: =C:
+Carregado: LOGONSERVER
+Carregado: PROMPT
+Carregado: PYTHONIOENCODING
+Carregado: CommonProgramW6432
+Carregado: ALLUSERSPROFILE
+Carregado: CLAUDE_CODE_OAUTH_SCOPES
+Carregado: INTERNAL_MAVEN_OPTS
+Carregado: CLAUDE_CODE_REPORT_FINDINGS
+Carregado: EXEC_DIR
+Carregado: CLAUDE_PREVIEW_CLASSIFIER_FLOOR
+Carregado: CLAUDE_PID
+Carregado: =ExitCode
+Carregado: AI_AGENT
+Carregado: CLAUDE_CODE_CHILD_SESSION
+Carregado: GIT_EDITOR
+Carregado: GCM_INTERACTIVE
+Arquivo .env carregado com sucesso!
+2026-08-08T12:42:48.316-03:00  INFO 37368 --- [pop] [  restartedMain] com.acessibiliadade.pop.PopApplication   : Starting PopApplication using Java 19.0.2 with PID 37368 (C:\Users\davisouza-ieg\IdeaProjects\pop-api\target\classes started by davisouza-ieg in C:\Users\davisouza-ieg\IdeaProjects\pop-api)
+2026-08-08T12:42:48.325-03:00  INFO 37368 --- [pop] [  restartedMain] com.acessibiliadade.pop.PopApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-08-08T12:42:49.900-03:00  INFO 37368 --- [pop] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-08-08T12:42:50.021-03:00  INFO 37368 --- [pop] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 115 ms. Found 10 JPA repository interfaces.
+2026-08-08T12:42:50.554-03:00  INFO 37368 --- [pop] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-08-08T12:42:50.566-03:00  INFO 37368 --- [pop] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-08-08T12:42:50.567-03:00  INFO 37368 --- [pop] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.34]
+2026-08-08T12:42:50.611-03:00  INFO 37368 --- [pop] [  restartedMain] o.a.c.c.C.[Tomcat-1].[localhost].[/]     : Initializing Spring embedded WebApplicationContext
+2026-08-08T12:42:50.612-03:00  INFO 37368 --- [pop] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2255 ms
+2026-08-08T12:42:50.785-03:00  INFO 37368 --- [pop] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Starting...
+2026-08-08T12:42:52.411-03:00  INFO 37368 --- [pop] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-4 - Added connection org.postgresql.jdbc.PgConnection@332692f9
+2026-08-08T12:42:52.415-03:00  INFO 37368 --- [pop] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Start completed.
+2026-08-08T12:42:52.630-03:00  INFO 37368 --- [pop] [  restartedMain] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://pg-6a391de-eduardocpolicarpo-af75.e.aivencloud.com:15725/pop?sslmode=require (PostgreSQL 16.14)
+2026-08-08T12:42:55.301-03:00  INFO 37368 --- [pop] [  restartedMain] o.f.c.i.s.JdbcTableSchemaHistory         : Repair of failed migration in Schema History table "public"."flyway_schema_history" not necessary. No failed migration detected.
+2026-08-08T12:42:56.142-03:00  INFO 37368 --- [pop] [  restartedMain] o.f.core.internal.command.DbRepair       : Successfully repaired schema history table "public"."flyway_schema_history" (execution time 00:01.867s).
+2026-08-08T12:43:01.445-03:00  INFO 37368 --- [pop] [  restartedMain] o.f.core.internal.command.DbValidate     : Successfully validated 10 migrations (execution time 00:00.835s)
+2026-08-08T12:43:04.129-03:00  INFO 37368 --- [pop] [  restartedMain] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 009
+2026-08-08T12:43:04.340-03:00  INFO 37368 --- [pop] [  restartedMain] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+2026-08-08T12:43:05.664-03:00  INFO 37368 --- [pop] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-08-08T12:43:05.686-03:00  INFO 37368 --- [pop] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-08-08T12:43:05.764-03:00  INFO 37368 --- [pop] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-08-08T12:43:05.991-03:00  WARN 37368 --- [pop] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-08-08T12:43:06.406-03:00  INFO 37368 --- [pop] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-4)']
+	Database driver: undefined/unknown
+	Database version: 16.14
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-08-08T12:43:07.390-03:00  INFO 37368 --- [pop] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-08-08T12:43:07.394-03:00  INFO 37368 --- [pop] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-08-08T12:43:07.836-03:00  WARN 37368 --- [pop] [  restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'accessibilityController' defined in file [C:\Users\davisouza-ieg\IdeaProjects\pop-api\target\classes\com\acessibiliadade\pop\controller\AccessibilityController.class]: Unsatisfied dependency expressed through constructor parameter 1: No qualifying bean of type 'com.acessibiliadade.pop.security.AuthorizationService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+2026-08-08T12:43:07.877-03:00  INFO 37368 --- [pop] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-08-08T12:43:07.879-03:00  INFO 37368 --- [pop] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Shutdown initiated...
+2026-08-08T12:43:10.356-03:00  INFO 37368 --- [pop] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Shutdown completed.
+2026-08-08T12:43:10.401-03:00  INFO 37368 --- [pop] [  restartedMain] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2026-08-08T12:43:10.436-03:00  INFO 37368 --- [pop] [  restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-08-08T12:43:10.509-03:00 ERROR 37368 --- [pop] [  restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 1 of constructor in com.acessibiliadade.pop.controller.AccessibilityController required a bean of type 'com.acessibiliadade.pop.security.AuthorizationService' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'com.acessibiliadade.pop.security.AuthorizationService' in your configuration.
+

@@ -32,6 +32,19 @@ public class AuthorizationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário autenticado não encontrado"));
     }
 
+    // Para endpoints públicos que opcionalmente personalizam a resposta quando há
+    // usuário logado (ex.: listagem de produtos filtrada por acessibilidade) —
+    // null em vez de AccessDeniedException para o caso anônimo.
+    public UUID currentUserIdOrNull() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof UserDetails details)) {
+            return null;
+        }
+        return userRepository.findByEmail(details.getUsername())
+                .map(User::getId)
+                .orElse(null);
+    }
+
     public boolean isAdmin(User user) {
         return user != null && ROLE_ADMIN.equals(user.getRole());
     }

@@ -26,11 +26,13 @@ public class ProductController {
         return productService.createProduct(product);
     }
 
+    // Endpoint público — visitante anônimo vê o catálogo sem filtro de acessibilidade;
+    // usuário logado continua recebendo a lista filtrada pelo próprio perfil.
     @GetMapping
     public List<Product> listAll() {
         List<Product> products = productService.getAllProducts();
         return accessibilityService.filterProductsByAccessibility(
-                products, authorizationService.currentUser().getId());
+                products, authorizationService.currentUserIdOrNull());
     }
 
     @GetMapping("/{id}")
