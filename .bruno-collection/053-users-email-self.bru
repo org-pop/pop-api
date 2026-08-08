@@ -1,0 +1,13 @@
+meta {
+  name: 053-users-email-self
+  type: http
+  seq: 53
+}
+get {
+  url: {{baseUrl}}/api/users/email/sweep.a@example.com
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

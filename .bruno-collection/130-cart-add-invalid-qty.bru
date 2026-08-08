@@ -1,0 +1,13 @@
+meta {
+  name: 130-cart-add-invalid-qty
+  type: http
+  seq: 130
+}
+post {
+  url: {{baseUrl}}/cart/{{userId_a}}/add/{{productId}}?quantity=0
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

@@ -1,0 +1,13 @@
+meta {
+  name: 133-cart-get-forbidden
+  type: http
+  seq: 133
+}
+get {
+  url: {{baseUrl}}/cart/{{userId_a}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_b}}
+}

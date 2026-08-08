@@ -1,0 +1,13 @@
+meta {
+  name: 154-payment-get-by-order-forbidden
+  type: http
+  seq: 154
+}
+get {
+  url: {{baseUrl}}/payments/order/{{orderId}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_b}}
+}

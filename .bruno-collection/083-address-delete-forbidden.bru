@@ -1,0 +1,13 @@
+meta {
+  name: 083-address-delete-forbidden
+  type: http
+  seq: 83
+}
+delete {
+  url: {{baseUrl}}/addresses/{{addressId}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_b}}
+}

@@ -1,0 +1,13 @@
+meta {
+  name: 124-accessibility-product
+  type: http
+  seq: 124
+}
+get {
+  url: {{baseUrl}}/api/accessibility/products/{{productId}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

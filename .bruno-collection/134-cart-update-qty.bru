@@ -1,0 +1,13 @@
+meta {
+  name: 134-cart-update-qty
+  type: http
+  seq: 134
+}
+put {
+  url: {{baseUrl}}/cart/{{userId_a}}/item/{{cartItemId}}?quantity=3
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

@@ -1,0 +1,18 @@
+meta {
+  name: 151-payment-create
+  type: http
+  seq: 151
+}
+post {
+  url: {{baseUrl}}/payments/order/{{orderId}}?method=CREDIT_CARD
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}
+script:post-response {
+  if (res.status === 200 || res.status === 201) {
+    bru.setVar("paymentId", res.body.id);
+  }
+}

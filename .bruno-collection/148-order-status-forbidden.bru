@@ -1,0 +1,13 @@
+meta {
+  name: 148-order-status-forbidden
+  type: http
+  seq: 148
+}
+put {
+  url: {{baseUrl}}/orders/{{orderId}}/status?status=SHIPPED
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

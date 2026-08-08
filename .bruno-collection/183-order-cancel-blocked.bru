@@ -1,0 +1,13 @@
+meta {
+  name: 183-order-cancel-blocked
+  type: http
+  seq: 183
+}
+delete {
+  url: {{baseUrl}}/orders/{{order2Id}}/cancel
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

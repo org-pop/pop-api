@@ -1,0 +1,13 @@
+meta {
+  name: 140-order-checkout-forbidden
+  type: http
+  seq: 140
+}
+post {
+  url: {{baseUrl}}/orders/{{userId_a}}/checkout
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_b}}
+}

@@ -1,0 +1,13 @@
+meta {
+  name: 095-phone-delete-forbidden
+  type: http
+  seq: 95
+}
+delete {
+  url: {{baseUrl}}/phones/{{phoneId}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_b}}
+}

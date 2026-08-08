@@ -1,0 +1,13 @@
+meta {
+  name: 094-phone-update-forbidden
+  type: http
+  seq: 94
+}
+put {
+  url: {{baseUrl}}/phones/{{phoneId}}?number=11900000000
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_b}}
+}

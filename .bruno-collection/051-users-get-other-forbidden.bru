@@ -1,0 +1,13 @@
+meta {
+  name: 051-users-get-other-forbidden
+  type: http
+  seq: 51
+}
+get {
+  url: {{baseUrl}}/api/users/{{userId_b}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

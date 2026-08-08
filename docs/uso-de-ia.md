@@ -32,7 +32,7 @@ técnica: qualquer integrante deve saber explicar as decisões e trechos abaixo.
 **1. JWT e Tokenização**
 
 Auxiliou os desenvolvedores a achar falhas e brechas nas travas de segurança e autenticação do projeto. Para que assim possam aperfeiçoar o projeto.
-
+j
 
 **2. Vazamento de hash de senha**
 

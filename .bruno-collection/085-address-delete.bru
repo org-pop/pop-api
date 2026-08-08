@@ -1,0 +1,13 @@
+meta {
+  name: 085-address-delete
+  type: http
+  seq: 85
+}
+delete {
+  url: {{baseUrl}}/addresses/{{addressId}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

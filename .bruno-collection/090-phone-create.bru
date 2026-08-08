@@ -1,0 +1,18 @@
+meta {
+  name: 090-phone-create
+  type: http
+  seq: 90
+}
+post {
+  url: {{baseUrl}}/phones/user/{{userId_a}}?number=11999999999
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}
+script:post-response {
+  if (res.status === 200 || res.status === 201) {
+    bru.setVar("phoneId", res.body.id);
+  }
+}

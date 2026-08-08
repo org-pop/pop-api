@@ -1,0 +1,13 @@
+meta {
+  name: 093-phone-update
+  type: http
+  seq: 93
+}
+put {
+  url: {{baseUrl}}/phones/{{phoneId}}?number=11988887777
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

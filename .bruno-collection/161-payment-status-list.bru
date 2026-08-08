@@ -1,0 +1,13 @@
+meta {
+  name: 161-payment-status-list
+  type: http
+  seq: 161
+}
+get {
+  url: {{baseUrl}}/payments/status/REFUNDED
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

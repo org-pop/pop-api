@@ -1,0 +1,28 @@
+meta {
+  name: 111-product-update-admin
+  type: http
+  seq: 111
+}
+put {
+  url: {{baseUrl}}/products/{{productId}}
+  body: json
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_admin}}
+}
+body:json {
+  {
+    "name": "Funko Pop! Darth Vader",
+    "description": "Darth Vader com sabre de luz vermelho.",
+    "price": 109.90,
+    "stock": 30,
+    "imageUrl": "https://cdn.pop.com/vader.jpg",
+    "franchise": "Star Wars",
+    "rarity": "RARO",
+    "accessibleDescription": "Figura preta de 9cm com sabre vermelho iluminado, base cinza.",
+    "imageAltText": "Funko Pop do Darth Vader empunhando sabre vermelho",
+    "colorPalette": "#000000,#8B0000,#4A4A4A",
+    "highContrast": true
+  }
+}

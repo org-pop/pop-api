@@ -1,0 +1,13 @@
+meta {
+  name: 084-address-delete-nonexistent
+  type: http
+  seq: 84
+}
+delete {
+  url: {{baseUrl}}/addresses/999999999
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

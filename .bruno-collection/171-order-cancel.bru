@@ -1,0 +1,13 @@
+meta {
+  name: 171-order-cancel
+  type: http
+  seq: 171
+}
+delete {
+  url: {{baseUrl}}/orders/{{orderId}}/cancel
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

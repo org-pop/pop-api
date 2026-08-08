@@ -1,0 +1,13 @@
+meta {
+  name: 061-users-list-admin
+  type: http
+  seq: 61
+}
+get {
+  url: {{baseUrl}}/api/users
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_admin}}
+}

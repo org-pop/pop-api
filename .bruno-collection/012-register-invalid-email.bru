@@ -1,0 +1,19 @@
+meta {
+  name: 012-register-invalid-email
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{baseUrl}}/api/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Invalid Email User",
+    "email": "not-an-email",
+    "password": "SenhaForte123"
+  }
+}

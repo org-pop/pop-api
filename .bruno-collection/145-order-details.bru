@@ -1,0 +1,13 @@
+meta {
+  name: 145-order-details
+  type: http
+  seq: 145
+}
+get {
+  url: {{baseUrl}}/orders/{{orderId}}/details
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

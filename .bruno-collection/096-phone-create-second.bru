@@ -1,0 +1,13 @@
+meta {
+  name: 096-phone-create-second
+  type: http
+  seq: 96
+}
+post {
+  url: {{baseUrl}}/phones/user/{{userId_a}}?number=11977776666
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

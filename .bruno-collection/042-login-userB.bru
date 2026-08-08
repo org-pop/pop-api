@@ -1,0 +1,25 @@
+meta {
+  name: 042-login-userB
+  type: http
+  seq: 42
+}
+
+post {
+  url: {{baseUrl}}/api/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "sweep.b@example.com",
+    "password": "SenhaForte123"
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setVar("token_b", res.body.token);
+    bru.setVar("userId_b", res.body.userId);
+  }
+}

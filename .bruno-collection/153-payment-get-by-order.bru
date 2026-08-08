@@ -1,0 +1,13 @@
+meta {
+  name: 153-payment-get-by-order
+  type: http
+  seq: 153
+}
+get {
+  url: {{baseUrl}}/payments/order/{{orderId}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

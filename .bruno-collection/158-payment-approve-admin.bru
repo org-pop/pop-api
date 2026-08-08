@@ -1,0 +1,13 @@
+meta {
+  name: 158-payment-approve-admin
+  type: http
+  seq: 158
+}
+post {
+  url: {{baseUrl}}/payments/{{paymentId}}/approve
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_admin}}
+}

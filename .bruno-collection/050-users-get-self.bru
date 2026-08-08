@@ -1,0 +1,13 @@
+meta {
+  name: 050-users-get-self
+  type: http
+  seq: 50
+}
+get {
+  url: {{baseUrl}}/api/users/{{userId_a}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

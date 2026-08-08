@@ -1,0 +1,13 @@
+meta {
+  name: 109-product-search
+  type: http
+  seq: 109
+}
+get {
+  url: {{baseUrl}}/products/search?name=Vader
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

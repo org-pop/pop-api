@@ -1,15 +1,13 @@
 package com.acessibiliadade.pop.filter;
 
+import com.acessibiliadade.pop.security.JwtAuthenticationEntryPoint;
 import com.acessibiliadade.pop.service.JwtService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,19 +18,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Map;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 
-    public JwtAuthenticationFilter(JwtService jwtService, @Lazy UserDetailsService userDetailsService) {
+    public JwtAuthenticationFilter(
+            JwtService jwtService,
+            @Lazy UserDetailsService userDetailsService,
+            JwtAuthenticationEntryPoint authenticationEntryPoint) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
     @Override
@@ -74,22 +74,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (JwtException | UsernameNotFoundException | IllegalArgumentException ex) {
             // Filtros rodam antes do DispatcherServlet, então o @RestControllerAdvice não pega
             // exceções daqui. Precisamos escrever a resposta 401 na mão.
-            writeUnauthorized(response, "Token inválido ou expirado");
+            authenticationEntryPoint.write(response, "Token inválido ou expirado");
             return;
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private void writeUnauthorized(HttpServletResponse response, String message) throws IOException {
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        Map<String, Object> body = Map.of(
-                "timestamp", LocalDateTime.now().toString(),
-                "status", HttpStatus.UNAUTHORIZED.value(),
-                "error", HttpStatus.UNAUTHORIZED.getReasonPhrase(),
-                "message", message
-        );
-        response.getWriter().write(objectMapper.writeValueAsString(body));
     }
 }

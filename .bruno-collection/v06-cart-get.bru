@@ -1,0 +1,15 @@
+meta {
+  name: v06-cart-get
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/cart/{{userId_a}}
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token_a}}
+}

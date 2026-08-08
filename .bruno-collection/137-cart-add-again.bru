@@ -1,0 +1,13 @@
+meta {
+  name: 137-cart-add-again
+  type: http
+  seq: 137
+}
+post {
+  url: {{baseUrl}}/cart/{{userId_a}}/add/{{productId}}?quantity=2
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

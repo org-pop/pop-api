@@ -1,0 +1,13 @@
+meta {
+  name: 060-users-list-forbidden
+  type: http
+  seq: 60
+}
+get {
+  url: {{baseUrl}}/api/users
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

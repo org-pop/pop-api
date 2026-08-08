@@ -1,0 +1,13 @@
+meta {
+  name: 160-payment-refund-admin
+  type: http
+  seq: 160
+}
+post {
+  url: {{baseUrl}}/payments/{{paymentId}}/refund
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_admin}}
+}

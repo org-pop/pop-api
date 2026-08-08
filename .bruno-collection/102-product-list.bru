@@ -1,0 +1,13 @@
+meta {
+  name: 102-product-list
+  type: http
+  seq: 102
+}
+get {
+  url: {{baseUrl}}/products
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

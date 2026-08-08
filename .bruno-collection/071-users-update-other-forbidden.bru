@@ -1,0 +1,19 @@
+meta {
+  name: 071-users-update-other-forbidden
+  type: http
+  seq: 71
+}
+put {
+  url: {{baseUrl}}/api/users/{{userId_b}}
+  body: json
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}
+body:json {
+  {
+    "name": "Hijacked",
+    "email": "sweep.b@example.com"
+  }
+}

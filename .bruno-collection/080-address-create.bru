@@ -1,0 +1,27 @@
+meta {
+  name: 080-address-create
+  type: http
+  seq: 80
+}
+post {
+  url: {{baseUrl}}/addresses/user/{{userId_a}}
+  body: json
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}
+body:json {
+  {
+    "street": "Rua das Flores",
+    "number": "123",
+    "city": "São Paulo",
+    "state": "SP",
+    "zipCode": "01234-567"
+  }
+}
+script:post-response {
+  if (res.status === 200 || res.status === 201) {
+    bru.setVar("addressId", res.body.id);
+  }
+}

@@ -1,0 +1,13 @@
+meta {
+  name: 055-users-email-other-admin
+  type: http
+  seq: 55
+}
+get {
+  url: {{baseUrl}}/api/users/email/sweep.b@example.com
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_admin}}
+}

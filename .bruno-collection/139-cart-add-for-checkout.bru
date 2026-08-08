@@ -1,0 +1,13 @@
+meta {
+  name: 139-cart-add-for-checkout
+  type: http
+  seq: 139
+}
+post {
+  url: {{baseUrl}}/cart/{{userId_a}}/add/{{productId}}?quantity=2
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

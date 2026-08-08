@@ -1,0 +1,13 @@
+meta {
+  name: 113-product-stock-admin
+  type: http
+  seq: 113
+}
+patch {
+  url: {{baseUrl}}/products/{{productId}}/stock?quantity=50
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_admin}}
+}

@@ -1,0 +1,13 @@
+meta {
+  name: 143-order-list
+  type: http
+  seq: 143
+}
+get {
+  url: {{baseUrl}}/orders/{{userId_a}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

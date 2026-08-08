@@ -1,0 +1,13 @@
+meta {
+  name: 152-payment-create-duplicate
+  type: http
+  seq: 152
+}
+post {
+  url: {{baseUrl}}/payments/order/{{orderId}}?method=PIX
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

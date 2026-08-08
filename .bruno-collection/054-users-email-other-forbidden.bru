@@ -1,0 +1,13 @@
+meta {
+  name: 054-users-email-other-forbidden
+  type: http
+  seq: 54
+}
+get {
+  url: {{baseUrl}}/api/users/email/sweep.b@example.com
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

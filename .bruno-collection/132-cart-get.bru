@@ -1,0 +1,13 @@
+meta {
+  name: 132-cart-get
+  type: http
+  seq: 132
+}
+get {
+  url: {{baseUrl}}/cart/{{userId_a}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

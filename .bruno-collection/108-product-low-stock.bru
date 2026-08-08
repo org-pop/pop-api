@@ -1,0 +1,13 @@
+meta {
+  name: 108-product-low-stock
+  type: http
+  seq: 108
+}
+get {
+  url: {{baseUrl}}/products/low-stock?threshold=1000
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

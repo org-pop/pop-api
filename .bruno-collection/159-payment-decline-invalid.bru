@@ -1,0 +1,13 @@
+meta {
+  name: 159-payment-decline-invalid
+  type: http
+  seq: 159
+}
+post {
+  url: {{baseUrl}}/payments/{{paymentId}}/decline
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_admin}}
+}

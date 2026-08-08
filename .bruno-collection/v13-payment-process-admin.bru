@@ -1,0 +1,15 @@
+meta {
+  name: v13-payment-process-admin
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{baseUrl}}/payments/{{paymentId}}/process
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token_admin}}
+}

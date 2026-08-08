@@ -1,0 +1,15 @@
+meta {
+  name: v08-order-details
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/orders/{{orderId}}/details
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token_a}}
+}

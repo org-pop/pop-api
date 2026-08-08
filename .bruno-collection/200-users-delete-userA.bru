@@ -1,0 +1,13 @@
+meta {
+  name: 200-users-delete-userA
+  type: http
+  seq: 200
+}
+delete {
+  url: {{baseUrl}}/api/users/{{userId_a}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

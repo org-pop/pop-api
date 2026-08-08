@@ -1,0 +1,15 @@
+meta {
+  name: v10-order-status-admin
+  type: http
+  seq: 10
+}
+
+put {
+  url: {{baseUrl}}/orders/{{orderId}}/status?status=PROCESSING
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token_admin}}
+}

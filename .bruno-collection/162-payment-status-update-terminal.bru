@@ -1,0 +1,13 @@
+meta {
+  name: 162-payment-status-update-terminal
+  type: http
+  seq: 162
+}
+put {
+  url: {{baseUrl}}/payments/{{paymentId}}/status?status=PENDING
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_admin}}
+}

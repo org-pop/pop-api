@@ -1,0 +1,13 @@
+meta {
+  name: 098-phone-delete-all
+  type: http
+  seq: 98
+}
+delete {
+  url: {{baseUrl}}/phones/user/{{userId_a}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

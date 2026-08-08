@@ -1,0 +1,13 @@
+meta {
+  name: 182-order-status-shipped-admin
+  type: http
+  seq: 182
+}
+put {
+  url: {{baseUrl}}/orders/{{order2Id}}/status?status=SHIPPED
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_admin}}
+}

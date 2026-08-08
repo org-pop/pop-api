@@ -1,0 +1,13 @@
+meta {
+  name: 191-product-delete-restricted
+  type: http
+  seq: 191
+}
+delete {
+  url: {{baseUrl}}/products/{{productId}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_admin}}
+}

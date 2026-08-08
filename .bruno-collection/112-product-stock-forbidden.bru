@@ -1,0 +1,13 @@
+meta {
+  name: 112-product-stock-forbidden
+  type: http
+  seq: 112
+}
+patch {
+  url: {{baseUrl}}/products/{{productId}}/stock?quantity=5
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

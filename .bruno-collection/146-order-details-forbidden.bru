@@ -1,0 +1,13 @@
+meta {
+  name: 146-order-details-forbidden
+  type: http
+  seq: 146
+}
+get {
+  url: {{baseUrl}}/orders/{{orderId}}/details
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_b}}
+}

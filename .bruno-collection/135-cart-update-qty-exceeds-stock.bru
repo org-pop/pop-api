@@ -1,0 +1,13 @@
+meta {
+  name: 135-cart-update-qty-exceeds-stock
+  type: http
+  seq: 135
+}
+put {
+  url: {{baseUrl}}/cart/{{userId_a}}/item/{{cartItemId}}?quantity=999999
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

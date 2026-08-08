@@ -1,0 +1,13 @@
+meta {
+  name: 057-users-email-invalid-format
+  type: http
+  seq: 57
+}
+get {
+  url: {{baseUrl}}/api/users/email/not-an-email
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

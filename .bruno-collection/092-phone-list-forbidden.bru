@@ -1,0 +1,13 @@
+meta {
+  name: 092-phone-list-forbidden
+  type: http
+  seq: 92
+}
+get {
+  url: {{baseUrl}}/phones/user/{{userId_a}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_b}}
+}

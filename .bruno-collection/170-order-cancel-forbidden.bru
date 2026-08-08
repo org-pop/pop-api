@@ -1,0 +1,13 @@
+meta {
+  name: 170-order-cancel-forbidden
+  type: http
+  seq: 170
+}
+delete {
+  url: {{baseUrl}}/orders/{{orderId}}/cancel
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_b}}
+}

@@ -1,0 +1,13 @@
+meta {
+  name: 091-phone-list
+  type: http
+  seq: 91
+}
+get {
+  url: {{baseUrl}}/phones/user/{{userId_a}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

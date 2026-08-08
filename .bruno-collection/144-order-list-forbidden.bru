@@ -1,0 +1,13 @@
+meta {
+  name: 144-order-list-forbidden
+  type: http
+  seq: 144
+}
+get {
+  url: {{baseUrl}}/orders/{{userId_a}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_b}}
+}

@@ -1,0 +1,13 @@
+meta {
+  name: 138-cart-clear
+  type: http
+  seq: 138
+}
+delete {
+  url: {{baseUrl}}/cart/{{userId_a}}/clear
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

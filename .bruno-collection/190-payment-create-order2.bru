@@ -1,0 +1,18 @@
+meta {
+  name: 190-payment-create-order2
+  type: http
+  seq: 190
+}
+post {
+  url: {{baseUrl}}/payments/order/{{order2Id}}?method=PIX
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}
+script:post-response {
+  if (res.status === 200 || res.status === 201) {
+    bru.setVar("payment2Id", res.body.id);
+  }
+}

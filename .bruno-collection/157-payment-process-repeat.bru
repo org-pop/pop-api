@@ -1,0 +1,13 @@
+meta {
+  name: 157-payment-process-repeat
+  type: http
+  seq: 157
+}
+post {
+  url: {{baseUrl}}/payments/{{paymentId}}/process
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_admin}}
+}

@@ -1,0 +1,13 @@
+meta {
+  name: 121-accessibility-settings-get-forbidden
+  type: http
+  seq: 121
+}
+get {
+  url: {{baseUrl}}/api/accessibility/users/{{userId_a}}/settings
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_b}}
+}

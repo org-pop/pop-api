@@ -1,0 +1,13 @@
+meta {
+  name: 202-users-delete-admin
+  type: http
+  seq: 202
+}
+delete {
+  url: {{baseUrl}}/api/users/{{userId_admin}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_admin}}
+}

@@ -1,0 +1,15 @@
+meta {
+  name: v09-order-items
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{baseUrl}}/orders/{{orderId}}/items
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token_a}}
+}

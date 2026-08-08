@@ -1,0 +1,19 @@
+meta {
+  name: 070-users-update-self
+  type: http
+  seq: 70
+}
+put {
+  url: {{baseUrl}}/api/users/{{userId_a}}
+  body: json
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}
+body:json {
+  {
+    "name": "Sweep User A Updated",
+    "email": "sweep.a@example.com"
+  }
+}

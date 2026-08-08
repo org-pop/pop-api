@@ -1,0 +1,13 @@
+meta {
+  name: 082-address-list-forbidden
+  type: http
+  seq: 82
+}
+get {
+  url: {{baseUrl}}/addresses/user/{{userId_a}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_b}}
+}

@@ -1,0 +1,13 @@
+meta {
+  name: 107-product-price-range
+  type: http
+  seq: 107
+}
+get {
+  url: {{baseUrl}}/products/price-range?min=1&max=1000
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

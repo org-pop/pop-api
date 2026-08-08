@@ -1,0 +1,13 @@
+meta {
+  name: 142-order-checkout-empty-cart
+  type: http
+  seq: 142
+}
+post {
+  url: {{baseUrl}}/orders/{{userId_a}}/checkout
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

@@ -1,0 +1,13 @@
+meta {
+  name: 104-product-get-nonexistent
+  type: http
+  seq: 104
+}
+get {
+  url: {{baseUrl}}/products/999999999
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

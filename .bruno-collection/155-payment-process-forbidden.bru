@@ -1,0 +1,13 @@
+meta {
+  name: 155-payment-process-forbidden
+  type: http
+  seq: 155
+}
+post {
+  url: {{baseUrl}}/payments/{{paymentId}}/process
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

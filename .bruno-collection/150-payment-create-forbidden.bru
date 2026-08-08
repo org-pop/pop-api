@@ -1,0 +1,13 @@
+meta {
+  name: 150-payment-create-forbidden
+  type: http
+  seq: 150
+}
+post {
+  url: {{baseUrl}}/payments/order/{{orderId}}?method=CREDIT_CARD
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_b}}
+}

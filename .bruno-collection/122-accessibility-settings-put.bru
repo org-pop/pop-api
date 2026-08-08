@@ -1,0 +1,23 @@
+meta {
+  name: 122-accessibility-settings-put
+  type: http
+  seq: 122
+}
+put {
+  url: {{baseUrl}}/api/accessibility/users/{{userId_a}}/settings
+  body: json
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}
+body:json {
+  {
+    "profiles": ["COLOR_BLINDNESS_RED_GREEN"],
+    "preferredLanguage": "en-US",
+    "simplifiedLanguage": false,
+    "screenReaderMode": true,
+    "fontSizePreference": "extra-large",
+    "colorTheme": "dark"
+  }
+}

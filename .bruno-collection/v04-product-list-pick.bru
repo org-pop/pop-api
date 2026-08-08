@@ -1,0 +1,21 @@
+meta {
+  name: v04-product-list-pick
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/products
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token_a}}
+}
+
+script:post-response {
+  if (res.status === 200 && Array.isArray(res.body) && res.body.length > 0) {
+    bru.setVar("productId", res.body[0].id);
+  }
+}

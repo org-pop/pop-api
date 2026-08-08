@@ -1,0 +1,13 @@
+meta {
+  name: 120-accessibility-settings-get-default
+  type: http
+  seq: 120
+}
+get {
+  url: {{baseUrl}}/api/accessibility/users/{{userId_a}}/settings
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}

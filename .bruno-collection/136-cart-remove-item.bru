@@ -1,0 +1,13 @@
+meta {
+  name: 136-cart-remove-item
+  type: http
+  seq: 136
+}
+delete {
+  url: {{baseUrl}}/cart/{{userId_a}}/item/{{cartItemId}}
+  body: none
+  auth: none
+}
+headers {
+  Authorization: Bearer {{token_a}}
+}
