@@ -1,4 +1,9 @@
--- Seed de produtos da franquia "2°D"
+-- Seed de produtos das franquias "2°D" (ordem alfabética) e "J&F" (Rodolfo e
+-- Diogo, de propósito fora da ordenação alfabética, adicionados ao final).
+--
+-- price do Rodolfo/Diogo: no JSON de origem o valor era 99999999999999.90, mas
+-- a coluna product.price é DECIMAL(10,2) (máx. 99999999.99) — usamos o teto da
+-- coluna em vez de alterar o schema.
 INSERT INTO product (name, description, price, stock, image_url, franchise, rarity)
 VALUES
     ('Funko Pop! Arakaki', 'Namorado da Ana Clara Blefari. (Japonês do cabelo cacheado?)', 670.67, 676767, 'arakaki', '2°D', 'AURUDO'),
@@ -24,4 +29,6 @@ VALUES
     ('Funko Pop! May', 'Linha de costura no lugar do cabelo. (baunilha???)', 99.90, 60, 'may', '2°D', 'COMUM'),
     ('Funko Pop! Rafa', 'Gêmeo dois, cabelo maior. (lhg)', 99.90, 60, 'rafa', '2°D', 'COMUM'),
     ('Funko Pop! Sousa', 'Calça skinny man.', 99.90, 60, 'sousa', '2°D', 'COMUM'),
-    ('Funko Pop! Taina', 'Tainá Tainá Incrivel Como Tu Muda. (ela odeia essa musica kkkkk)', 99.90, 60, 'taina', '2°D', 'COMUM');
+    ('Funko Pop! Taina', 'Tainá Tainá Incrivel Como Tu Muda. (ela odeia essa musica kkkkk)', 99.90, 60, 'taina', '2°D', 'COMUM'),
+    ('Funko Pop! Rodolfo 01', 'Rodolfo professor de DAD. Ama K-POP, reações coreanas e projetos incríveis!', 99999999.99, 1, 'rodolfo', 'J&F', 'GOD'),
+    ('Funko Pop! Diogo 02', 'Diogo é um cara gente boa, professor de DS e Bahia! ', 99999999.99, 1, 'diogo', 'J&F', 'GOD');

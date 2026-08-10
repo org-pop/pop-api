@@ -72,10 +72,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (JwtException | UsernameNotFoundException | IllegalArgumentException ex) {
-            // Filtros rodam antes do DispatcherServlet, então o @RestControllerAdvice não pega
-            // exceções daqui. Precisamos escrever a resposta 401 na mão.
-            authenticationEntryPoint.write(response, "Token inválido ou expirado");
-            return;
+            // Token presente porém inválido/expirado: não autentica e segue a chain.
+            // Rotas públicas (permitAll) continuam acessíveis; rotas protegidas são
+            // barradas mais adiante pelo authenticationEntryPoint padrão do Spring Security
+            // (sem token válido, cai como não autenticado).
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);
