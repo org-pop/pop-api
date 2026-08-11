@@ -33,6 +33,6 @@ public class AuthDTOs {
     ) {
     }
 
-    public record AuthResponse(String token, UUID userId, String email, String name) {
+    public record AuthResponse(String token, UUID userId, String email, String name, String role) {
     }
 }

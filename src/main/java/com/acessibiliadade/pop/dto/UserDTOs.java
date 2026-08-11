@@ -16,7 +16,8 @@ public class UserDTOs {
             String name,
             String email,
             LocalDateTime createdAt,
-            BigDecimal accountBalance
+            BigDecimal accountBalance,
+            String role
     ) {
         public static UserResponse from(User user) {
             return new UserResponse(
@@ -24,7 +25,8 @@ public class UserDTOs {
                     user.getName(),
                     user.getEmail(),
                     user.getCreatedAt(),
-                    user.getAccountBalance()
+                    user.getAccountBalance(),
+                    user.getRole()
             );
         }
     }
