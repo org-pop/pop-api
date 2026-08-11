@@ -1,8 +1,9 @@
 package com.acessibiliadade.pop.controller;
 
+import com.acessibiliadade.pop.dto.OrderDTOs.OrderItemResponse;
+import com.acessibiliadade.pop.dto.OrderDTOs.OrderResponse;
 import com.acessibiliadade.pop.enums.OrderStatus;
 import com.acessibiliadade.pop.model.Order;
-import com.acessibiliadade.pop.model.OrderItem;
 import com.acessibiliadade.pop.security.AuthorizationService;
 import com.acessibiliadade.pop.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -22,35 +23,35 @@ public class OrderController {
     private final AuthorizationService authorizationService;
 
     @PostMapping("/{userId}/checkout")
-    public Order createOrder(@PathVariable UUID userId) {
+    public OrderResponse createOrder(@PathVariable UUID userId) {
         authorizationService.assertOwnership(userId);
-        return orderService.createOrderFromCart(userId);
+        return OrderResponse.from(orderService.createOrderFromCart(userId));
     }
 
     @GetMapping("/{userId}")
-    public List<Order> getUserOrders(@PathVariable UUID userId) {
+    public List<OrderResponse> getUserOrders(@PathVariable UUID userId) {
         authorizationService.assertOwnership(userId);
-        return orderService.getUserOrders(userId);
+        return orderService.getUserOrders(userId).stream().map(OrderResponse::from).toList();
     }
 
     @GetMapping("/{orderId}/details")
-    public Order getOrderById(@PathVariable Long orderId) {
+    public OrderResponse getOrderById(@PathVariable Long orderId) {
         Order order = orderService.getOrderById(orderId);
         assertOrderOwnership(order);
-        return order;
+        return OrderResponse.from(order);
     }
 
     @GetMapping("/{orderId}/items")
-    public List<OrderItem> getOrderItems(@PathVariable Long orderId) {
+    public List<OrderItemResponse> getOrderItems(@PathVariable Long orderId) {
         assertOrderOwnership(orderService.getOrderById(orderId));
-        return orderService.getOrderItems(orderId);
+        return orderService.getOrderItems(orderId).stream().map(OrderItemResponse::from).toList();
     }
 
     @PutMapping("/{orderId}/status")
     @PreAuthorize("hasRole('ADMIN')")
-    public Order updateStatus(@PathVariable Long orderId,
+    public OrderResponse updateStatus(@PathVariable Long orderId,
                               @RequestParam OrderStatus status) {
-        return orderService.updateOrderStatus(orderId, status);
+        return OrderResponse.from(orderService.updateOrderStatus(orderId, status));
     }
 
     @DeleteMapping("/{orderId}/cancel")

@@ -1,5 +1,6 @@
 package com.acessibiliadade.pop.dto;
 
+import com.acessibiliadade.pop.model.Product;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
@@ -22,7 +23,7 @@ public class ProductDTOs {
 
             @NotNull(message = "Quantidade em estoque é obrigatória")
             @Min(value = 0, message = "Estoque não pode ser negativo")
-            Integer stockQuantity,
+            Integer stock,
 
             String description,
             String imageUrl
@@ -34,8 +35,21 @@ public class ProductDTOs {
             String franchise,
             String rarity,
             BigDecimal price,
-            Integer stockQuantity,
+            Integer stock,
             String description,
             String imageUrl
-    ) {}
+    ) {
+        public static ProductResponse from(Product product) {
+            return new ProductResponse(
+                    product.getId(),
+                    product.getName(),
+                    product.getFranchise(),
+                    product.getRarity(),
+                    product.getPrice(),
+                    product.getStock(),
+                    product.getDescription(),
+                    product.getImageUrl()
+            );
+        }
+    }
 }

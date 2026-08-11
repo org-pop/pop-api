@@ -1,6 +1,6 @@
 package com.acessibiliadade.pop.controller;
 
-import com.acessibiliadade.pop.model.Phone;
+import com.acessibiliadade.pop.dto.PhoneDTOs.PhoneResponse;
 import com.acessibiliadade.pop.security.AuthorizationService;
 import com.acessibiliadade.pop.service.PhoneService;
 import lombok.RequiredArgsConstructor;
@@ -18,23 +18,23 @@ public class PhoneController {
     private final AuthorizationService authorizationService;
 
     @PostMapping("/user/{userId}")
-    public Phone addPhone(@PathVariable UUID userId,
+    public PhoneResponse addPhone(@PathVariable UUID userId,
                           @RequestParam String number) {
         authorizationService.assertOwnership(userId);
-        return phoneService.addPhone(userId, number);
+        return PhoneResponse.from(phoneService.addPhone(userId, number));
     }
 
     @GetMapping("/user/{userId}")
-    public List<Phone> getUserPhones(@PathVariable UUID userId) {
+    public List<PhoneResponse> getUserPhones(@PathVariable UUID userId) {
         authorizationService.assertOwnership(userId);
-        return phoneService.getUserPhones(userId);
+        return phoneService.getUserPhones(userId).stream().map(PhoneResponse::from).toList();
     }
 
     @PutMapping("/{phoneId}")
-    public Phone updatePhone(@PathVariable Long phoneId,
+    public PhoneResponse updatePhone(@PathVariable Long phoneId,
                              @RequestParam String number) {
         UUID caller = authorizationService.currentUser().getId();
-        return phoneService.updatePhone(phoneId, number, caller);
+        return PhoneResponse.from(phoneService.updatePhone(phoneId, number, caller));
     }
 
     @DeleteMapping("/{phoneId}")

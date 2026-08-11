@@ -2,6 +2,7 @@ package com.acessibiliadade.pop.service;
 
 import com.acessibiliadade.pop.dto.AccessibilityDTOs.*;
 import com.acessibiliadade.pop.enums.AccessibilityProfile;
+import com.acessibiliadade.pop.enums.SupportedLanguageCode;
 import com.acessibiliadade.pop.exception.ResourceNotFoundException;
 import com.acessibiliadade.pop.model.Product;
 import com.acessibiliadade.pop.model.User;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -75,7 +77,7 @@ public class AccessibilityService {
                 ? settingsRepository.findByUserId(userId).orElse(null)
                 : null;
 
-        String lang = settings != null ? settings.getPreferredLanguage() : "pt-BR";
+        String lang = settings != null ? settings.getPreferredLanguage() : SupportedLanguageCode.DEFAULT.getCode();
         boolean screenReader = settings != null && Boolean.TRUE.equals(settings.getScreenReaderMode());
         boolean simplified = settings != null && Boolean.TRUE.equals(settings.getSimplifiedLanguage());
 
@@ -88,7 +90,7 @@ public class AccessibilityService {
         }
 
         String translatedDescription = null;
-        if (!"pt-BR".equals(lang) && description != null) {
+        if (!SupportedLanguageCode.DEFAULT.getCode().equals(lang) && description != null) {
             translatedDescription = translationService.translate(description, "pt", lang);
         }
 
@@ -143,15 +145,11 @@ public class AccessibilityService {
                 .toList();
     }
 
-    // IDIOMAS SUPORTADOS
+    // IDIOMAS SUPORTADOS — lê direto do enum, não duplica a lista aqui
     public SupportedLanguagesResponse getSupportedLanguages() {
-        List<SupportedLanguage> languages = List.of(
-                new SupportedLanguage("pt-BR", "Português (Brasil)"),
-                new SupportedLanguage("en-US", "English (US)"),
-                new SupportedLanguage("es-ES", "Español"),
-                new SupportedLanguage("fr-FR", "Français"),
-                new SupportedLanguage("de-DE", "Deutsch")
-        );
+        List<SupportedLanguage> languages = Arrays.stream(SupportedLanguageCode.values())
+                .map(l -> new SupportedLanguage(l.getCode(), l.getDisplayName()))
+                .toList();
         return new SupportedLanguagesResponse(languages);
     }
 

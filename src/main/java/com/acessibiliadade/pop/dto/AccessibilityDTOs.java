@@ -1,6 +1,7 @@
 package com.acessibiliadade.pop.dto;
 
 import com.acessibiliadade.pop.enums.AccessibilityProfile;
+import com.acessibiliadade.pop.validation.ValidLanguageCode;
 import jakarta.validation.constraints.Pattern;
 
 import java.math.BigDecimal;
@@ -12,8 +13,7 @@ public class AccessibilityDTOs {
     public record AccessibilitySettingsRequest(
             Set<AccessibilityProfile> profiles,
 
-            @Pattern(regexp = "pt-BR|en-US|es-ES|fr-FR|de-DE",
-                    message = "Idioma não suportado. Use: pt-BR, en-US, es-ES, fr-FR ou de-DE")
+            @ValidLanguageCode
             String preferredLanguage,
 
             Boolean simplifiedLanguage,

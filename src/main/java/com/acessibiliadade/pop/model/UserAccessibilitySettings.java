@@ -1,6 +1,7 @@
 package com.acessibiliadade.pop.model;
 
 import com.acessibiliadade.pop.enums.AccessibilityProfile;
+import com.acessibiliadade.pop.enums.SupportedLanguageCode;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,7 +29,7 @@ public class UserAccessibilitySettings {
     private Set<AccessibilityProfile> profiles = new HashSet<>();
 
     @Column(name = "preferred_language", length = 10)
-    private String preferredLanguage = "pt-BR";
+    private String preferredLanguage = SupportedLanguageCode.DEFAULT.getCode();
 
     @Column(name = "simplified_language")
     private Boolean simplifiedLanguage = false;

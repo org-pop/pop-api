@@ -134,11 +134,12 @@ src/main/resources/
 
 <!-- Preencher antes da entrega. Rubrica §8.9 exige "integrantes com função". -->
 
-| Nome | Função | GitHub |
-|:-----|:-------|:-------|
-| _preencher_ | Backend | @dvarakaki |
-| _preencher_ | Frontend | @_preencher_ |
-| _preencher_ | _preencher_ | @_preencher_ |
+| Nome                 | Função | GitHub               |
+|:---------------------|:-------|:---------------------|
+| _Davi Arakaki_       | Backend | @dvarakaki           |
+| _Eduardo Policarpo_  | Frontend | @_edwardpolicarpo_   |
+| _Felipe Boregio_     | _preencher_ | @_Lipe-to_           |
+| _Lorraine Frontelli_ | _preencher_ | @_LorraineFrontelli_ |
 
 ## Uso de IA
 
