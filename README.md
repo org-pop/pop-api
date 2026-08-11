@@ -134,12 +134,12 @@ src/main/resources/
 
 <!-- Preencher antes da entrega. Rubrica §8.9 exige "integrantes com função". -->
 
-| Nome                 | Função                               | GitHub               |
-|:---------------------|:-------------------------------------|:---------------------|
-| _Davi Arakaki_       | Backend / Banco                      | @dvarakaki           |
-| _Eduardo Policarpo_  | Backend / Frontend                   | @_edwardpolicarpo_   |
-| _Felipe Boregio_     | _Backend / Frontend _                | @_Lipe-to_           |
-| _Lorraine Frontelli_ | _Backend / Banco_                    | @_LorraineFrontelli_ |
+| Nome                 | Função             | GitHub               |
+|:---------------------|:-------------------|:---------------------|
+| _Davi Arakaki_       | Backend / Banco    | @dvarakaki           |
+| _Eduardo Policarpo_  | Backend / Frontend | @_edwardpolicarpo_   |
+| _Felipe Boregio_     | _Design / Frontend | @_Lipe-to_           |
+| _Lorraine Frontelli_ | _Backend / Banco_  | @_LorraineFrontelli_ |
 
 ## Uso de IA
 
