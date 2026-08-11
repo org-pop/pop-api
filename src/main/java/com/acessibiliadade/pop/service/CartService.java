@@ -44,6 +44,11 @@ public class CartService {
         }
 
         Cart cart = getOrCreateCart(userId);
+        // Lock pessimista no carrinho: sem isso, dois "adicionar ao carrinho" concorrentes
+        // (duplo clique/duplo submit) fazem o check-then-act abaixo em paralelo, cada um
+        // vendo "item não existe" e inserindo sua própria linha — furando a validação de
+        // estoque e deixando duas linhas para o mesmo (cart_id, product_id) no banco.
+        cartRepository.findByIdForUpdate(cart.getId());
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado: " + productId));
 
