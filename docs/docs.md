@@ -236,13 +236,12 @@ Exemplo: `GET /products/rarity/RARO`
 
 `POST /cart/{userId}/add/{productId}?quantity=2`
 
-**200 OK** — retorna `CartItem`:
+**200 OK** — retorna `CartItemResponse`:
 
 ```json
 {
   "id": 10,
-  "cart": { "id": 5 },
-  "product": { "id": 1, "name": "Funko Pop! Darth Vader" },
+  "product": { "id": 1, "name": "Funko Pop! Darth Vader", "price": 99.90, "imageUrl": "https://cdn.pop.com/vader.jpg" },
   "quantity": 2
 }
 ```
@@ -343,12 +342,12 @@ Repetir a mesma transição (ex.: `approve` sobre pagamento já `APPROVED`) tamb
 
 Cada pedido só pode ter **um** pagamento. Chamar de novo para o mesmo `orderId` retorna **400**. A unique constraint no banco cobre corridas.
 
-**Retorno:**
+**Retorno:** `PaymentResponse`
 
 ```json
 {
   "id": 200,
-  "order": { "id": 101 },
+  "orderId": 101,
   "method": "CREDIT_CARD",
   "status": "PENDING"
 }

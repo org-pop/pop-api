@@ -13,7 +13,6 @@ import com.acessibiliadade.pop.model.Payment;
 import com.acessibiliadade.pop.repository.OrderRepository;
 import com.acessibiliadade.pop.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,18 +87,6 @@ public class PaymentService {
 
     public List<Payment> getPaymentsByStatus(PaymentStatus status, UUID userId) {
         return paymentRepository.findByStatusAndOrder_User_Id(status, userId);
-    }
-
-    // Precisa ser @Transactional para atravessar Payment -> Order -> User (ambos LAZY)
-    // sem estourar LazyInitializationException fora da sessão do Hibernate.
-    @Transactional(readOnly = true)
-    public void assertOwnership(Long paymentId, UUID userId) {
-        Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Pagamento não encontrado: " + paymentId));
-        Order order = payment.getOrder();
-        if (order == null || order.getUser() == null || !userId.equals(order.getUser().getId())) {
-            throw new AccessDeniedException("Você não tem permissão para acessar este pagamento");
-        }
     }
 
     private Payment transitionTo(Long paymentId, PaymentStatus target) {
